@@ -1,0 +1,45 @@
+#ap_handle{
+    height: 100%;
+    width: 100%;
+    background-color: rgb(238, 238, 238);
+    display: grid;
+    grid-template-columns: 4rem auto;
+}
+#ap_head{
+    height: 100%;
+    width: 100%;
+    background-color: rgb(238, 238, 238);
+    display: grid;
+    grid-template-columns: 5rem auto 5rem;
+}
+#ap_top{
+    position: fixed;
+    top:0px;
+    left:0px;
+    display: grid;
+    width: 100%;
+    grid-template-rows: 2rem 2.5rem;
+}
+#nb{
+    margin:1rem 1.5rem;
+    background-color: #cfcfcf54;
+    border-radius: 0.6rem;
+}
+#nb_head{
+    padding:0.3rem 1rem;
+    font-size: 0.9rem;
+}
+.pr{
+    padding:0.2rem 0.2rem;
+    border-bottom:rgba(0, 0, 0, 0.02) solid thin;
+    display: grid;
+    grid-template-columns: 3rem auto 5rem;
+}
+.pr_actionButton{
+    padding: 0.2rem 0.6rem;
+    color: white;
+    font-size: 0.8rem;
+    font-weight: 300;
+    background-color: #6e6e6e;
+    border-radius: 0.8rem;
+}

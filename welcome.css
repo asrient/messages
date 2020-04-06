@@ -1,0 +1,57 @@
+.wel_continue{
+    height:2.5rem;
+    width:90vw;
+    max-width:18rem;
+    border-radius:0.5rem;
+    background: linear-gradient(#00a1ff, #0043ff);
+}
+.wel_continue:hover{
+    opacity: 0.7;
+}
+.wel_icon{
+    font-size: 5rem;
+}
+#wel_head{
+    height:5vh;
+    width:100%;
+    display: grid;
+    grid-template-columns: 4rem auto;
+}
+#wel_head1{
+    position: fixed;
+    top:0px;
+    left: 0px;
+    height:4rem;
+    width:100%;
+    display: grid;
+    grid-template-columns: 4rem 2rem auto 6rem;
+}
+#wel_bdy{
+    position: fixed;
+    top:0px;
+    left: 0px;
+    height: 100vh;
+    width: 100vw;
+    background-color: #e8e8e8;
+    overflow-x: unset;
+}
+.wel_input{
+    padding:0.4rem;
+    border:none;
+    margin:0.2rem 0.3rem;
+    border-radius: 0.4rem;
+    font-size: 0.9rem;
+    color: #00000069;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.575);
+}
+.wel_input:focus{
+    box-shadow: 0 0 3px 4px #007cff63;
+    animation-name: focus;
+  animation-duration: 350ms;
+  animation-direction: alternate-reverse;
+}
+@keyframes focus{
+    0% { box-shadow: 0 0 8px 9px #51a5ff50;}
+    100% { box-shadow: 0 0 3px 4px #007cff63;}
+}
