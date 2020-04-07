@@ -90,6 +90,7 @@ let store = createStore(reducers);
 var api = {
     getState: store.getState,
     subscribe: store.subscribe,
+    parseAirId,
     init: function () {
         store.dispatch({ type: 'INIT' })
         var info = window.info.get();
@@ -143,7 +144,7 @@ var api = {
                     st.peers[peerId] = peer;
                     //put it on recents
                     if (st.recents.init) {
-                        st.recents.list.splice(0, 0, peer);
+                        st.recents.list.splice(0, 0, peerId);
                     }
                     //TODO: put it on allPeers list
                     store.dispatch({ type: 'UPDATE', state: st });
@@ -169,23 +170,30 @@ var api = {
         var willSave = false;
         var save = (cb) => {
             if (willSave) {
+                //console.log("saving..");
                 window.peers.update({ uid: idObj.uid, host: idObj.host }, { $set: rec }, {}, () => {
                     cb();
                 })
             }
             else {
+                //console.warn("not saving");
                 cb();
             }
         }
         getInfo((peer) => {
             Object.keys(peer).forEach((key) => {
+                var changed = false;
                 if (prop[key] != undefined) {
+                    if (peer[key] != prop[key]) {
+                        changed = true;
+                    }
                     peer[key] = prop[key];
                 }
                 if (!dynamic.includes(key)) {
                     rec[key] = peer[key];
-                    if (prop[key] != undefined) {
+                    if (prop[key] != undefined && changed) {
                         willSave = true;
+                        //console.log("will save for", key);
                     }
                 }
             })
@@ -199,8 +207,12 @@ var api = {
     loadRecents: function () {
         var list = [];
         window.peers.find({}).sort({ lastContact: -1 }).limit(50).exec((err, recs) => {
-            list = recs.map((rec) => {
-                return rec.uid + ':' + rec.host;
+             recs.forEach((rec) => {
+                 var peerId=rec.uid + ':' + rec.host;
+                 var exists=list.includes(peerId);
+                 if(!exists){
+                     list.push(peerId);
+                 }
             })
             var st = store.getState();
             st.recents.init = true;
@@ -213,6 +225,7 @@ var api = {
         var len = st.recents.list.length;
         var list = [];
         st.recents.list.forEach((peerId, ind) => {
+            console.log(peerId)
             this.getPeer(peerId, (peer) => {
                 if (peer != null) {
                     list.push(peer);
@@ -222,6 +235,9 @@ var api = {
                 }
             })
         })
+        if(!len){
+            cb([]);
+        }
     },
     init0: function (dat) {
         if (dat.icon == undefined) {
@@ -340,7 +356,7 @@ var api = {
                     this.updatePeer(peerId, { sessionId: null, lastPing: time }, peer);
                 }
                 if (((peer.lastPing + 60 * 60 * 3) < time) || force || peer.sessionId == null) {
-                    console.log("INIT2",peer.uid);
+                    console.log("INIT2", peer.uid);
                     var secret = peer.secret;
                     var data = code();
                     var enc = data;//

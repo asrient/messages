@@ -21,25 +21,31 @@
     grid-template-rows: 2rem 2.5rem;
 }
 #nb{
-    margin:1rem 1.5rem;
-    background-color: #cfcfcf54;
-    border-radius: 0.6rem;
+    margin: 1rem 1.6rem;
+    background-color: #cfcfcf21;
+    border-radius: 0.9rem;
 }
 #nb_head{
-    padding:0.3rem 1rem;
+    padding:0.4rem 1rem;
+    font-size: 0.9rem;
+    padding-bottom: 0rem;
+}
+#ac{
+    margin: 1rem 1.6rem;
+    background-color: #cfcfcf21;
+    border-radius: 0.9rem;
+    min-height: 5rem;
+}
+#ac_head{
+    padding:0.4rem 1rem;
     font-size: 0.9rem;
 }
-.pr{
-    padding:0.2rem 0.2rem;
-    border-bottom:rgba(0, 0, 0, 0.02) solid thin;
-    display: grid;
-    grid-template-columns: 3rem auto 5rem;
+#ac .wel_input{
+    background-color: rgb(255, 255, 255);
+    border: #e6e6e6 solid thin;
 }
-.pr_actionButton{
-    padding: 0.2rem 0.6rem;
-    color: white;
-    font-size: 0.8rem;
-    font-weight: 300;
-    background-color: #6e6e6e;
-    border-radius: 0.8rem;
+#ac_doneHolder{
+    display: flex;
+    justify-content: flex-end;
+    padding: 0.5rem 1rem;
 }

@@ -2,6 +2,7 @@ import $ from "jquery";
 import React, { Component } from "react";
 import "./addPeer.css";
 import { Icon, Switcher, BarButton, Loading } from "./global.js";
+import Peer from "./peer.js";
 
 var crypto = pine.include('crypto');
 
@@ -9,43 +10,6 @@ function code(n = 10) {
     return crypto.randomBytes(n).toString('hex');
 }
 
-
-class Peer extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {}
-    }
-    componentDidMount() {
-    }
-    getButton() {
-        if (this.props.isAdded) {
-            return (<div className="pr_actionButton" style={{ backgroundColor: '#007cff' }} onClick={() => {
-                if (this.props.uid != undefined && this.props.host != undefined) {
-                    var peerId = this.props.uid + ':' + this.props.host 
-                    window.actions('OPEN_CHAT', peerId);
-                }
-            }}>Chat</div>)
-        }
-        else {
-            return (<div className="pr_actionButton" style={{ backgroundColor: '#00c12f' }} onClick={() => {
-                if (this.props.uid != undefined && this.props.host != undefined && this.props.sessionId != undefined) {
-                    var airId = this.props.uid + ':' + this.props.host + ':' + this.props.sessionId
-                    window.actions('ADD_PEER', airId);
-                }
-            }}>Add</div>)
-        }
-    }
-    render() {
-        return (<div className="pr">
-            <div className="center"><Icon className="size-m" src="common://icons/QuickActions_Contact.png" /></div>
-            <div>
-                <div className="ink-black base-semibold size-xs">{this.props.username}</div>
-                <div className="ink-dark base-light size-xs" style={{ fontSize: '0.8rem' }}>{this.props.devicename}</div>
-            </div>
-            <div className="center">{this.getButton()}</div>
-        </div>)
-    }
-}
 
 class Nearby extends React.Component {
     constructor(props) {
@@ -80,7 +44,7 @@ class Nearby extends React.Component {
                 return (<Peer uid={peer.uid}
                     host={peer.host}
                     sessionId={peer.sessionId}
-                    key={peer.uid}
+                    key={peer.uid + peer.host + peer.sessionId}
                     username={peer.username}
                     devicename={peer.devicename}
                     icon={peer.icon}
@@ -104,14 +68,108 @@ class Nearby extends React.Component {
 class AddByCode extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {}
+        this.state = { airId: '', showDoneButton: false, peers: {}, peer: null }
     }
     componentDidMount() {
     }
+    done = () => {
+        this.state.showDoneButton=false;
+        this.state.peer = null;
+        this.state.peers = {};
+        this.setState(this.state);
+        var qids = window.state.parseAirId(this.state.airId);
+        window.state.getPeer(qids.uid + ':' + qids.host, (peer) => {
+            if (peer == null) {
+                window.state.reveal(this.state.airId, (airId, info) => {
+                    var ids = window.state.parseAirId(airId);
+                    if (ids.uid == this.state.airId.split(':')[0] && ids.host == this.state.airId.split(':')[1]) {
+                        this.state.peer = null;
+                        this.state.peers[airId] = {
+                            uid: ids.uid,
+                            host: ids.host,
+                            sessionId: ids.sessionId,
+                            username: info.username,
+                            devicename: info.devicename,
+                            icon: info.icon,
+                            isAdded: false
+                        }
+                        this.setState(this.state);
+                    }
+                    else {
+                        console.error("REVEAL airId not same as the one looking for");
+                    }
+                })
+            }
+            else {
+                this.state.peer = peer;
+                this.setState(this.state);
+            }
+        })
 
+    }
+    getList() {
+        var html = [];
+        if (this.state.peer != null) {
+            var peer = this.state.peer;
+            return (<div>
+                <Peer uid={peer.uid}
+                    host={peer.host}
+                    sessionId={peer.sessionId}
+                    key={peer.uid + peer.host + peer.sessionId}
+                    username={peer.username}
+                    devicename={peer.devicename}
+                    icon={peer.icon}
+                    isAdded={true} />
+            </div>)
+        }
+        else {
+            Object.keys(this.state.peers).forEach((peerId) => {
+                var peer=this.state.peers[peerId];
+                html.push(<Peer uid={peer.uid}
+                    host={peer.host}
+                    sessionId={peer.sessionId}
+                    key={peer.uid + peer.host + peer.sessionId}
+                    username={peer.username}
+                    devicename={peer.devicename}
+                    icon={peer.icon}
+                    isAdded={false} />)
+            })
+            if(html.length){
+                return html;
+            }
+            else{
+                return(<div></div>)
+            }
+        }
+    }
+    change = (event) => {
+        this.state.peer = null;
+        this.state.peers = {};
+        this.state.airId = event.target.value.trim();
+        var txt = this.state.airId;
+        this.state.showDoneButton = false;
+        if (txt.split('').includes(':')) {
+            if (txt.split(':')[0].length && txt.split(':')[1].length) {
+                this.state.showDoneButton = true;
+            }
+        }
+        this.setState(this.state);
+    }
+    getDoneButton() {
+        if (this.state.showDoneButton) {
+            return (<div id="ac_doneHolder"><button onClick={this.done}>Search</button></div>)
+        }
+    }
     render() {
-        return (<div>
-            Add By Code
+        return (<div id="ac">
+            <div id="ac_head" className="ink-dark base-light">
+                ADD CODE
+            </div>
+            <div className="center">
+                <input placeholder="AirId" type="text" className="wel_input" value={this.state.airId} onChange={this.change} />
+            </div>
+            {this.getDoneButton()}
+            {this.getList()}
         </div>)
 
 

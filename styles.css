@@ -17,3 +17,17 @@
         -webkit-app-region: drag;
         -webkit-user-select: none;
 }
+.pr{
+    padding:0.5rem 0.4rem;
+    border-bottom:rgba(0, 0, 0, 0.02) solid thin;
+    display: grid;
+    grid-template-columns: 3rem auto 5rem;
+}
+.pr_actionButton{
+    padding: 0.2rem 0.6rem;
+    color: white;
+    font-size: 0.8rem;
+    font-weight: 300;
+    background-color: #6e6e6e;
+    border-radius: 0.8rem;
+}
