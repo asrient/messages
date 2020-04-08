@@ -11,9 +11,11 @@ import actions from "./actions.js";
 import Recents from "./recents.js";
 import Welcome from "./welcome.js";
 import AddPeer from "./AddPeer.js";
+import Chat from "./chat.js";
 import { Icon, Switcher,BarButton } from "./global.js";
 
 window.peers=pine.data.store('peers.json');
+window.chats=pine.data.store('chats.json');
 window.info = pine.data.dictionary('info.json');
 state.init();
 window.state = state;
@@ -51,6 +53,9 @@ class Nav extends React.Component {
         }
         if (this.state.currentPage == 'addPeer') {
             return (<AddPeer relay={this.state.relayToPage} />)
+        }
+        if (this.state.currentPage == 'chat') {
+            return (<Chat relay={this.state.relayToPage} />)
         }
         else {
             return (<div className="center" style={{ height: '16rem' }}>🚧</div>)

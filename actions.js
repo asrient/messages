@@ -14,8 +14,14 @@ function actions(act, data) {
     else if (act == 'OPEN_ADDPEER') {
         window.state.openPage('addPeer', data);
     }
+    else if (act == 'OPEN_CHAT') {
+        window.state.openPage('chat', data);
+    }
     else if (act == 'ADD_PEER') {
         window.state.init1(data);
+    }
+    else if (act == 'SEND_CHAT') {
+        window.state.sendChat(data.peerId, data.chat);
     }
 }
 

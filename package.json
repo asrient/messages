@@ -24,11 +24,13 @@
   "dependencies": {
     "@popperjs/core": "^2.1.1",
     "@tippyjs/react": "^4.0.0-alpha.3",
+    "autosize": "^4.0.2",
     "jquery": "^3.3.1",
     "react": "^16.5.2",
     "react-dom": "^16.5.2",
     "react-ios-switch": "^0.1.19",
     "react-router-dom": "^4.3.1",
+    "react-textarea-autosize": "^7.1.2",
     "redux": "^4.0.5"
   }
 }

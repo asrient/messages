@@ -29,9 +29,7 @@ function parseMessage(msg) {
     opts.forEach((opt, ind) => {
         var key = opt.split('=')[0];
         var val = opt.split('=')[1];
-        key = key.toLowerCase();
         key = key.trim();
-        val = val.trim();
         data[key] = val;
     })
     return data;
@@ -200,6 +198,18 @@ var api = {
             save(() => {
                 var st = store.getState();
                 st.peers[peerId] = peer;
+                if (prop.lastContact != undefined) {
+                    //need to update recents;
+                    if (st.recents.init) {
+                        var removeInd = st.recents.list.findIndex((id) => {
+                            return id == peerId;
+                        })
+                        if (removeInd >= 0) {
+                            st.recents.list.splice(removeInd, 1);
+                        }
+                        st.recents.list.splice(0, 0, peerId);
+                    }
+                }
                 store.dispatch({ type: 'UPDATE', state: st });
             })
         })
@@ -207,12 +217,12 @@ var api = {
     loadRecents: function () {
         var list = [];
         window.peers.find({}).sort({ lastContact: -1 }).limit(50).exec((err, recs) => {
-             recs.forEach((rec) => {
-                 var peerId=rec.uid + ':' + rec.host;
-                 var exists=list.includes(peerId);
-                 if(!exists){
-                     list.push(peerId);
-                 }
+            recs.forEach((rec) => {
+                var peerId = rec.uid + ':' + rec.host;
+                var exists = list.includes(peerId);
+                if (!exists) {
+                    list.push(peerId);
+                }
             })
             var st = store.getState();
             st.recents.init = true;
@@ -235,7 +245,7 @@ var api = {
                 }
             })
         })
-        if(!len){
+        if (!len) {
             cb([]);
         }
     },
@@ -292,7 +302,8 @@ var api = {
                         isTyping: false,
                         addedOn: time,
                         lastPing: time,
-                        lastContact: time
+                        lastContact: time,
+                        lastRead: 0
                     }
                     this.addPeer(peer);
                 })
@@ -321,7 +332,8 @@ var api = {
                     isTyping: false,
                     addedOn: time,
                     lastPing: time,
-                    lastContact: time
+                    lastContact: time,
+                    lastRead: 0
                 }
                 this.addPeer(peer);
                 var st = store.getState();
@@ -338,9 +350,9 @@ var api = {
             }
         })
     },
-    init2: function (peerId, force = false, peerObj) {
+    init2: function (peerId, force = false, peerObj = null, onlySessionId = null) {
         var getInfo = (cb) => {
-            if (peerObj == undefined) {
+            if (peerObj == null) {
                 this.getPeer(peerId, cb);
             }
             else {
@@ -361,7 +373,11 @@ var api = {
                     var data = code();
                     var enc = data;//
                     //encrypt here
-                    pine.airPeer.request(peerId, buildMessage({ type: 'INIT2', encdata: enc }), (ress) => {
+                    var reqId = peerId;
+                    if (onlySessionId != null) {
+                        reqId += ':' + onlySessionId;
+                    }
+                    pine.airPeer.request(reqId, buildMessage({ type: 'INIT2', encdata: enc }), (ress) => {
                         if (ress.status == 200) {
                             var res = parseMessage(ress.body);
                             var airId = ress.from;
@@ -417,7 +433,7 @@ var api = {
                     icon: st.info.icon
                 }));
                 if (peer.sessionId != sessionId) {
-                    this.init2(peerId, true);
+                    this.init2(peerId, true, peer, sessionId);
                     console.log("handle INIT2: new sessionId, force INIT2 ing..");
                 }
             }
@@ -482,6 +498,152 @@ var api = {
                 }
             })
         })
+    },
+    initChat: function (peerId) {
+        var st = store.getState();
+        if (st.chats[peerId] == undefined) {
+            var dt = new Date();
+            var time = dt.getTime();
+            st.chats[peerId] = { upto: time, allLoaded: false, skip: 0, list: [] };
+            store.dispatch({ type: 'UPDATE', state: st });
+            this.loadChat(peerId);
+        }
+    },
+    loadChat: function (peerId) {
+        var st = store.getState();
+        var chat = st.chats[peerId];
+        if (chats != undefined) {
+            window.chats.find({ peerId, deliveredOn: { '$lt': chat.upto } }).skip(chat.skip).sort({ sentOn: 1 }).limit(10).exec((err, recs) => {
+                if (recs != null) {
+                    st = store.getState();
+                    var list = recs.concat(st.chats[peerId].list);
+                    st.chats[peerId].skip = chat.skip + recs.length;
+                    st.chats[peerId].list = list;
+                    if (!recs.length) {
+                        st.chats[peerId].allLoaded = true;
+                    }
+                    store.dispatch({ type: 'UPDATE', state: st });
+                }
+            })
+        }
+    },
+    logChat: function (peerId, chat) {
+        var st = store.getState();
+        chat.peerId = peerId;
+        chat.key = code(10);
+        if (st.chats[peerId] != undefined) {
+            st.chats[peerId].list.push(chat);
+        }
+        window.chats.insert(chat);
+        store.dispatch({ type: 'UPDATE', state: st });
+    },
+    sendChat: function (peerId, chat) {
+        this.getPeer(peerId, (peer) => {
+            if (peer != null) {
+                if (peer.sessionId != null) {
+                    var dt = new Date();
+                    var time = dt.getTime();
+                    chat.sentOn = time;
+                    var airId = peerId + ':' + peer.sessionId;
+                    pine.airPeer.request(airId, buildMessage({ type: 'CHAT', chat: JSON.stringify(chat) }), (res) => {
+                        if (res.status == 200) {
+                            var ress = parseMessage(res.body);
+                            chat.via = 'web';
+                            if (peer.sessionId.split('.')[0] == 'local') {
+                                chat.via = 'local';
+                            }
+                            if (ress.isRead == 'true') {
+                                ress.isRead = true;
+                            }
+                            else
+                                ress.isRead = false;
+                            chat.isDelivered = true;
+                            var chatStatus = 'DELIVERED';
+                            chat.deliveredOn = parseInt(ress.deliveredOn);
+                            if (ress.isRead) {
+                                chatStatus = 'OPENED';
+                            }
+                            var st = store.getState();
+                            chat.from = st.info.uid + ':' + st.info.host;
+                            chat.to = peerId;
+                            //console.log('chat sent!',chat,ress);
+                            this.logChat(peerId, chat);
+                            dt = new Date();
+                            time = dt.getTime();
+                            var update = { chatStatus, lastContact: time, lastPing: time }
+                            if (ress.isRead) {
+                                update.lastRead = time;
+                            }
+                            this.updatePeer(peerId, update, peer);
+                        }
+                        else {
+                            console.error("chat: got wrong status code");
+                        }
+                    })
+                }
+                else {
+                    console.error("Cant send chat: sessionId is not known");
+                    //TODO: show an Alert that peer is offline
+                }
+            }
+            else {
+                console.error("Cant send chat: unknown peerId");
+            }
+        })
+    },
+    receiveChat: function (airId, chat, respond) {
+        chat = JSON.parse(chat);
+        var ids = parseAirId(airId);
+        var peerId = ids.uid + ':' + ids.host;
+        this.getPeer(peerId, (peer) => {
+            if (peer != null) {
+                if (peer.sessionId != null) {
+                    var dt = new Date();
+                    var time = dt.getTime();
+                    if (ids.sessionId == peer.sessionId) {
+                        chat.via = 'web';
+                        if (peer.sessionId.split('.')[0] == 'local') {
+                            chat.via = 'local';
+                        }
+                        var ress = {};
+                        chat.isDelivered = true;
+                        var chatStatus = 'DELIVERED';
+                        ress.deliveredOn = time;
+                        chat.deliveredOn = time;
+                        var st = store.getState();
+                        if (st.nav.page == 'chat' && st.nav.relay == peerId) {
+                            ress.isRead = true;
+                            chatStatus = 'OPENED';
+                        }
+                        chat.to = st.info.uid + ':' + st.info.host;
+                        chat.from = peerId;
+                        //console.log('chat received..',chat);
+                        //console.log('chat receive response',ress);
+                        respond(200, buildMessage(ress));
+                        this.logChat(peerId, chat);
+                        dt = new Date();
+                        time = dt.getTime();
+                        var update = { chatStatus, lastContact: time, lastPing: time }
+                        if (ress.isRead) {
+                            update.lastRead = time;
+                        }
+                        this.updatePeer(peerId, update, peer);
+                    }
+                    else {
+                        console.error("received chat: unauthorized sessionId");
+                        respond(300, 'UNAUTHORIZED');
+                    }
+                }
+                else {
+                    console.error("Cant send chat: sessionId is not known");
+                    respond(300, 'INIT2 REQUIRED');
+                }
+            }
+            else {
+                console.error("Cant receive chat: unknown peerId");
+                respond(300, 'INIT1 REQUIRED');
+            }
+        })
     }
 }
 
@@ -502,6 +664,9 @@ pine.airPeer.on('request', (req) => {
     }
     else if (data.type == 'INIT2') {
         api.handleInit2(req.from, data.encdata, req.respond);
+    }
+    else if (data.type == 'CHAT') {
+        api.receiveChat(req.from, data.chat, req.respond);
     }
 })
 

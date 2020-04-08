@@ -1,0 +1,63 @@
+#cht_head{
+    display: grid;
+    grid-template-columns: 3rem 3rem auto 3rem 2rem 1rem;
+    position: fixed;
+    top: 0px;
+    left:0px;
+    height: 4rem;
+    width: 100%;
+    background-color: rgba(230, 230, 230, 0.212);
+    border-bottom: rgba(0, 0, 0, 0.103) solid thin;
+    backdrop-filter: blur(20px);
+}
+#cht_sendButt{
+    padding: 0.2rem 0.6rem;
+    background-color: rgb(112, 112, 112);
+    color:white;
+    font-size: 0.9rem;
+    border-radius: 0.8rem;
+}
+.cht_input{
+    padding: 0.4rem;
+    font-family: inherit;
+    border: rgba(0, 0, 0, 0.199) solid thin;
+    margin:0.2rem 0.3rem;
+    border-radius: 0.8rem;
+    font-size: 0.9rem;
+    color: #000000ec;
+    font-weight: 200;
+    background: rgba(255, 255, 255, 0.42);
+    max-width: 15rem;
+    min-width: 12rem;
+    min-height: 1.8rem;
+    resize: none;
+}
+#cht_title{
+    overflow: hidden;
+     font-size: 0.7rem;
+}
+#cht_bar{
+    position: fixed;
+    bottom:0px;
+    left:0px;
+    width:100%;
+    padding:0.3rem 0.5rem;
+    background-color: rgba(240, 240, 240, 0.212);
+    backdrop-filter: blur(20px);
+}
+.cht_textHolder{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0rem 0.5rem;
+}
+.cht_text{
+    padding: 0.3rem 0.8rem;
+    margin: 0.15rem 0rem;
+    background-color: #ececec;
+    border-radius: 2rem;
+    overflow-wrap: break-word;
+    font-size: 0.9rem;
+    max-width: calc(90vw);
+    overflow: hidden;
+}
