@@ -363,11 +363,11 @@ var api = {
             var dt = new Date;
             var time = dt.getTime();
             if (peer != null) {
-                if ((peer.lastPing + 60 * 60 * 5) < time) {
+                if ((peer.lastPing + 1000 * 60 * 3) < time) {
                     //Its about 5 mins since we got auth.. consider the peer offline
                     this.updatePeer(peerId, { sessionId: null, lastPing: time }, peer);
                 }
-                if (((peer.lastPing + 60 * 60 * 3) < time) || force || peer.sessionId == null) {
+                if (((peer.lastPing + 1000 * 60 ) < time) || force || peer.sessionId == null) {
                     console.log("INIT2", peer.uid);
                     var secret = peer.secret;
                     var data = code();
@@ -499,30 +499,38 @@ var api = {
             })
         })
     },
-    initChat: function (peerId) {
+    initChat: function (peerId, cb = function () { }) {
         var st = store.getState();
         if (st.chats[peerId] == undefined) {
             var dt = new Date();
             var time = dt.getTime();
             st.chats[peerId] = { upto: time, allLoaded: false, skip: 0, list: [] };
             store.dispatch({ type: 'UPDATE', state: st });
-            this.loadChat(peerId);
+            this.loadChat(peerId, cb);
         }
     },
-    loadChat: function (peerId) {
+    loadChat: function (peerId, cb = function () { }) {
         var st = store.getState();
         var chat = st.chats[peerId];
         if (chats != undefined) {
-            window.chats.find({ peerId, deliveredOn: { '$lt': chat.upto } }).skip(chat.skip).sort({ sentOn: 1 }).limit(10).exec((err, recs) => {
+            window.chats.find({ peerId, deliveredOn: { '$lt': chat.upto } }).skip(chat.skip).sort({ sentOn: -1 }).limit(15).exec((err, recs) => {
                 if (recs != null) {
                     st = store.getState();
-                    var list = recs.concat(st.chats[peerId].list);
-                    st.chats[peerId].skip = chat.skip + recs.length;
-                    st.chats[peerId].list = list;
-                    if (!recs.length) {
-                        st.chats[peerId].allLoaded = true;
+                    recs.reverse();
+                    if (st.chats[peerId].skip == chat.skip) {
+                        var list = recs.concat(st.chats[peerId].list);
+                        st.chats[peerId].skip = chat.skip + recs.length;
+                        console.log('next skip', st.chats[peerId].skip);
+                        st.chats[peerId].list = list;
+                        if (!recs.length) {
+                            st.chats[peerId].allLoaded = true;
+                        }
+                        store.dispatch({ type: 'UPDATE', state: st });
+                        cb();
                     }
-                    store.dispatch({ type: 'UPDATE', state: st });
+                    else {
+                        console.error("LOADCHAT: list updated before completion");
+                    }
                 }
             })
         }
