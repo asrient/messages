@@ -83,33 +83,33 @@ class Chat extends React.Component {
             txts[txts.length - 1].scrollIntoView();
         }
     }
-    getTextHtml(chat,next) {
-        var timeStamp=()=>{
-            if(next!=null){
-                if(Math.abs(next.deliveredOn-chat.deliveredOn)>30*60*1000){
-                    var dt= new Date(next.deliveredOn);
-                    var str=dt.toDateString();
-                    var hrs=dt.getHours();
-                    var suff='AM'
-                    if(hrs>12){
-                      suff='PM';
-                      hrs=hrs-12;
+    getTextHtml(chat, next) {
+        var timeStamp = () => {
+            if (next != null) {
+                if (Math.abs(next.deliveredOn - chat.deliveredOn) > 30 * 60 * 1000) {
+                    var dt = new Date(next.deliveredOn);
+                    var str = dt.toDateString();
+                    var hrs = dt.getHours();
+                    var suff = 'AM'
+                    if (hrs > 12) {
+                        suff = 'PM';
+                        hrs = hrs - 12;
                     }
-                    var min=dt.getMinutes();
-                    if(min<10){
-                        min='0'+min;
+                    var min = dt.getMinutes();
+                    if (min < 10) {
+                        min = '0' + min;
                     }
-                    str=str.split(' ')[0]+' '+str.split(' ')[2]+' '+str.split(' ')[1]+' '+hrs+':'+min+' '+suff;
-                return(<div className="center base-semilight ink-dark" style={{fontSize:'0.8rem',paddingBottom:'0.02rem',paddingTop:'0.5rem'}}>
-                    {str}</div>)
+                    str = str.split(' ')[0] + ' ' + str.split(' ')[2] + ' ' + str.split(' ')[1] + ' ' + hrs + ':' + min + ' ' + suff;
+                    return (<div className="center base-semilight ink-dark" style={{ fontSize: '0.8rem', paddingBottom: '0.02rem', paddingTop: '0.5rem' }}>
+                        {str}</div>)
                 }
             }
         }
         var dir = 'flex-start';
         var bgcolor = '#ccc';//light grey
         var txtcolor = 'black';
-        var space='0.7rem';
-        var myPeerId=this.state.me.uid + ':' + this.state.me.host;
+        var space = '0.7rem';
+        var myPeerId = this.state.me.uid + ':' + this.state.me.host;
         if (chat.from == myPeerId) {
             dir = 'flex-end';
             txtcolor = 'white';
@@ -118,19 +118,19 @@ class Chat extends React.Component {
                 bgcolor = 'linear-gradient(100deg,rgb(228, 0, 255),#9100ff)';//purple
             }
         }
-        if(next!=null){
-          if (chat.from == next.from) {
-           if(Math.abs(next.deliveredOn-chat.deliveredOn)<60*1000){
-               space='0.07rem';
-           }
-        }  
+        if (next != null) {
+            if (chat.from == next.from) {
+                if (Math.abs(next.deliveredOn - chat.deliveredOn) < 60 * 1000) {
+                    space = '0.07rem';
+                }
+            }
         }
-        
+
         return (<div key={chat.key + chat.sentOn}>
-        <div className="cht_textHolder" style={{ justifyContent: dir }}>
-            <div className="cht_text base-light" style={{ background: bgcolor, color: txtcolor,marginBottom:space }} >{chat.text}</div>
-        </div>
-        {timeStamp()}
+            <div className="cht_textHolder" style={{ justifyContent: dir }}>
+                <div className="cht_text base-light" style={{ background: bgcolor, color: txtcolor, marginBottom: space }} >{chat.text}</div>
+            </div>
+            {timeStamp()}
         </div>)
     }
     showChat() {
@@ -140,12 +140,12 @@ class Chat extends React.Component {
             return (<div className="ink-dark base-regular center" style={{ height: '16rem' }}>No messages</div>)
         }
         else {
-            list.forEach((chat,ind) => {
-                var next=list[ind+1];
-                if(next==undefined){
-                    next=null;
+            list.forEach((chat, ind) => {
+                var next = list[ind + 1];
+                if (next == undefined) {
+                    next = null;
                 }
-                html.push(this.getTextHtml(chat,next));
+                html.push(this.getTextHtml(chat, next));
             })
             return html;
         }
@@ -220,7 +220,9 @@ class Chat extends React.Component {
 
                     </div>
                     <div className="handle"></div>
-                    <div className="center"><BarButton icon="Preferences_Advanced" /></div>
+                    <div className="center"><BarButton icon="Preferences_Advanced" onClick={() => {
+                        window.state.init2(this.props.relay, true);
+                    }} /></div>
                     <div className="handle"></div>
                 </div>
                 <div style={{ height: '6rem' }}></div>

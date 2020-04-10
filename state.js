@@ -603,6 +603,7 @@ var api = {
         chat = JSON.parse(chat);
         var ids = parseAirId(airId);
         var peerId = ids.uid + ':' + ids.host;
+        var sessionId=ids.sessionId;
         this.getPeer(peerId, (peer) => {
             if (peer != null) {
                 if (peer.sessionId != null) {
@@ -640,11 +641,13 @@ var api = {
                     else {
                         console.error("received chat: unauthorized sessionId");
                         respond(300, 'UNAUTHORIZED');
+                        this.init2(peerId, true, peer, sessionId);
                     }
                 }
                 else {
-                    console.error("Cant send chat: sessionId is not known");
+                    console.error("Cant receive chat: sessionId is not known");
                     respond(300, 'INIT2 REQUIRED');
+                    this.init2(peerId, true, peer, sessionId);
                 }
             }
             else {
