@@ -363,11 +363,11 @@ var api = {
             var dt = new Date;
             var time = dt.getTime();
             if (peer != null) {
-                if ((peer.lastPing + 1000 * 60 * 3) < time) {
+                if ((peer.lastPing + 1000 * 60 * 1.5) < time) {
                     //Its about 5 mins since we got auth.. consider the peer offline
                     this.updatePeer(peerId, { sessionId: null, lastPing: time }, peer);
                 }
-                if (((peer.lastPing + 1000 * 60 ) < time) || force || peer.sessionId == null) {
+                if (((peer.lastPing + 1000 * 40) < time) || force || peer.sessionId == null) {
                     console.log("INIT2", peer.uid);
                     var secret = peer.secret;
                     var data = code();
@@ -408,33 +408,51 @@ var api = {
                     })
                 }
                 else {
-                    console.log("skipping INIT2..");
+                    //console.log("skipping INIT2..");
                 }
             }
             else {
                 console.error("Cannot INIT2: peerId not in records.")
             }
         })
-
     },
     handleInit2: function (airId, encdata, respond) {
         var peerId = airId.split(':')[0] + ':' + airId.split(':')[1];
         var sessionId = airId.split(':')[2];
         this.getPeer(peerId, (peer) => {
             if (peer != null) {
-                var secret = peer.secret;
-                //decrypt data here;
-                var dec = encdata;//
-                var st = store.getState();
-                respond(200, buildMessage({
-                    decdata: dec,
-                    devicename: st.info.devicename,
-                    username: st.info.username,
-                    icon: st.info.icon
-                }));
-                if (peer.sessionId != sessionId) {
-                    this.init2(peerId, true, peer, sessionId);
-                    console.log("handle INIT2: new sessionId, force INIT2 ing..");
+                var prev = null;
+                if(peer.sessionId!=null){
+                    prev = peer.sessionId.split('.')[0]
+                }
+                var next = sessionId.split('.')[0];
+                var dt = new Date();
+                var timeDiff = dt.getTime() - peer.lastPing;
+                var willDo = true;
+                if (next != 'local' && prev == 'local') {
+                    if (timeDiff < 12 * 1000) {
+                        willDo = false;
+                        //console.error("Not handling INIT2 cuz req sessionId is global nd time diff is short");
+                    }
+                }
+                if (willDo) {
+                    var secret = peer.secret;
+                    //decrypt data here;
+                    var dec = encdata;//
+                    var st = store.getState();
+                    respond(200, buildMessage({
+                        decdata: dec,
+                        devicename: st.info.devicename,
+                        username: st.info.username,
+                        icon: st.info.icon
+                    }));
+                    if (peer.sessionId != sessionId) {
+                        this.init2(peerId, true, peer, sessionId);
+                        console.log("handle INIT2: new sessionId, force INIT2 ing..");
+                    }
+                }
+                else {
+                    respond(300, buildMessage({ decdata: 'none' }));
                 }
             }
             else {
@@ -603,7 +621,7 @@ var api = {
         chat = JSON.parse(chat);
         var ids = parseAirId(airId);
         var peerId = ids.uid + ':' + ids.host;
-        var sessionId=ids.sessionId;
+        var sessionId = ids.sessionId;
         this.getPeer(peerId, (peer) => {
             if (peer != null) {
                 if (peer.sessionId != null) {
