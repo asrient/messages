@@ -15,7 +15,7 @@ class BarButton extends React.Component {
     getContent = () => {
         if (this.props.icon != undefined) {
             return (<div className="bar_butt_icon"
-                style={{ backgroundImage: 'url(common://icons/' + this.props.icon + '.png)' }}></div>)
+                style={{ backgroundImage: 'url(assets://icons/' + this.props.icon + '.png)' }}></div>)
         }
     }
     render() {

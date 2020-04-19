@@ -1,7 +1,5 @@
 import { createStore } from 'redux';
 
-var crypto = pine.include('crypto');
-
 function code(n = 5) {
     return crypto.randomBytes(n).toString('hex');
 }
@@ -93,7 +91,7 @@ var api = {
         store.dispatch({ type: 'INIT' })
         var info = window.info.get();
         if (info.uid != undefined && info.host != undefined) {
-            pine.airPeer.start(info.uid, info.host, 'messages', info.username + ':' + info.devicename)
+            airPeer.start(info.uid, info.host, 'messages', info.username + ':' + info.devicename)
         }
     },
     openPage: function (page, relay) {
@@ -266,7 +264,7 @@ var api = {
         window.info.set('icon', dat.icon);
         store.dispatch({ type: 'INIT' });
         if (dat.uid != undefined && dat.host != undefined) {
-            pine.airPeer.start(dat.uid, dat.host, 'messages', dat.username + ':' + dat.devicename)
+            airPeer.start(dat.uid, dat.host, 'messages', dat.username + ':' + dat.devicename)
         }
     },
     init1: function (airId) {
@@ -286,7 +284,7 @@ var api = {
                     instanceCode: st.info.instanceCode,
                     secret
                 };
-                pine.airPeer.request(airId, buildMessage(req), (ress) => {
+                airPeer.request(airId, buildMessage(req), (ress) => {
                     var res = parseMessage(ress.body);
                     var dt = new Date;
                     var time = dt.getTime();
@@ -377,7 +375,7 @@ var api = {
                     if (onlySessionId != null) {
                         reqId += ':' + onlySessionId;
                     }
-                    pine.airPeer.request(reqId, buildMessage({ type: 'INIT2', encdata: enc }), (ress) => {
+                    airPeer.request(reqId, buildMessage({ type: 'INIT2', encdata: enc }), (ress) => {
                         if (ress.status == 200) {
                             var res = parseMessage(ress.body);
                             var airId = ress.from;
@@ -462,7 +460,7 @@ var api = {
         })
     },
     reveal: function (airId, cb) {
-        pine.airPeer.request(airId, buildMessage({ type: 'reveal' }), (ress) => {
+        airPeer.request(airId, buildMessage({ type: 'reveal' }), (ress) => {
             var res = parseMessage(ress.body);
             cb(ress.from, res);
         })
@@ -571,7 +569,7 @@ var api = {
                     var time = dt.getTime();
                     chat.sentOn = time;
                     var airId = peerId + ':' + peer.sessionId;
-                    pine.airPeer.request(airId, buildMessage({ type: 'CHAT', chat: JSON.stringify(chat) }), (res) => {
+                    airPeer.request(airId, buildMessage({ type: 'CHAT', chat: JSON.stringify(chat) }), (res) => {
                         if (res.status == 200) {
                             var ress = parseMessage(res.body);
                             chat.via = 'web';
@@ -676,7 +674,7 @@ var api = {
     }
 }
 
-pine.airPeer.on('request', (req) => {
+airPeer.on('request', (req) => {
     var data = parseMessage(req.body);
     if (data.type == 'reveal') {
         var st = store.getState();
@@ -699,19 +697,19 @@ pine.airPeer.on('request', (req) => {
     }
 })
 
-pine.airPeer.on('connection', (airId) => {
+airPeer.on('connection', (airId) => {
     airId = parseAirId(airId);
     var data = store.getState();
     data.info.sessionId = airId.sessionId;
     store.dispatch({ type: 'UPDATE', state: data });
 })
 
-pine.airPeer.on('localPeerFound', (peer) => {
+airPeer.on('localPeerFound', (peer) => {
     if (peer.app == 'messages')
         api.addLocalPeer(peer);
 })
 
-pine.airPeer.on('localPeerRemoved', (peer) => {
+airPeer.on('localPeerRemoved', (peer) => {
     if (peer.app == 'messages')
         api.removeLocalPeer(peer);
 })

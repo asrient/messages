@@ -211,7 +211,7 @@ class Chat extends React.Component {
                     </div>
                     <div className="center handle" id="cht_title">
                         <div className="center">
-                            <Icon style={{ fontSize: '1.8rem', margin: '0px' }} src={"common://icons/QuickActions_Contact.png"} />
+                            <Icon style={{ fontSize: '1.8rem', margin: '0px' }} src={"assets://icons/QuickActions_Contact.png"} />
                         </div>
                         <div className="center-col" style={{ alignItems: 'flex-start', paddingLeft: '0.5rem' }}>
                             <div style={{ fontSize: '0.9rem' }} className="base-regular ink-black">{this.state.peer.username}</div>

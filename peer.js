@@ -44,7 +44,7 @@ class Peer extends React.Component {
     }
     getStatus(){
         function html(name){
-            return(<div><Icon style={{fontSize: '0.8rem'}} src={"source://"+name+".png"}/>&nbsp;</div>)
+            return(<div><Icon style={{fontSize: '0.8rem'}} src={"assets://icons/"+name+".png"}/>&nbsp;</div>)
         }
         if(this.props.chatStatus!=undefined){
             var status=this.props.chatStatus;
@@ -67,7 +67,7 @@ class Peer extends React.Component {
     }
     render() {
         return (<div className="pr">
-            <div className="center"><Icon className="size-m" src="common://icons/QuickActions_Contact.png" /></div>
+            <div className="center"><Icon className="size-m" src="assets://icons/QuickActions_Contact.png" /></div>
             <div>
                 <div className="ink-black base-semibold size-xs">{this.props.username}</div>
                 <div className="ink-dark base-light size-xs" style={{ fontSize: '0.8rem',display:'flex' }}>

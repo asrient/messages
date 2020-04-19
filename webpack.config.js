@@ -22,7 +22,7 @@ module.exports = {
   },
   resolve: { extensions: ["*", ".js", ".jsx"] },
   output: {
-    path: "H:\\AA\\pine\\app\\data\\apps\\messages\\source",
+    path: "H:\\AA\\messages\\desktop\\bundle",
     publicPath: "/",
     filename: "[name].js"
   },

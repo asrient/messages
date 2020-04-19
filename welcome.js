@@ -3,7 +3,6 @@ import React, { Component } from "react";
 import "./welcome.css";
 import { Icon, Switcher, BarButton } from "./global.js";
 
-var crypto = pine.include('crypto');
 
 function code(n = 10) {
     return crypto.randomBytes(n).toString('hex');
@@ -36,7 +35,7 @@ class Welcome extends React.Component {
                     this.state.page = 0;
                     this.setState(this.state);
                 }} /></div>
-                <div className="handle center"><Icon src="source://icon.png" className="size-xl" /></div>
+                <div className="handle center"><Icon src="assets://icon.png" className="size-xl" /></div>
                 <div className="handle"></div>
             </div>
             <div style={{ marginTop: '3rem', padding: '1rem' }}>
@@ -99,7 +98,7 @@ class Welcome extends React.Component {
             return (<div id="wel_bdy">
                 <div id="wel_head"><div></div><div className="handle"></div></div>
                 <div className="center-col handle" style={{ height: bannerHt}}>
-                    <div><Icon className="wel_icon" src="source://icon-shadow.png" /></div>
+                    <div><Icon className="wel_icon" src="assets://icons/icon-shadow.png" /></div>
                     <div className="size-l ink-black base-light" style={{ paddingTop: '1rem' }}>Messages</div>
                 </div>
                 {this.getHostOpt()}

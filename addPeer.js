@@ -4,7 +4,6 @@ import "./addPeer.css";
 import { Icon, Switcher, BarButton, Loading } from "./global.js";
 import Peer from "./peer.js";
 
-var crypto = pine.include('crypto');
 
 function code(n = 10) {
     return crypto.randomBytes(n).toString('hex');

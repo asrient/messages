@@ -2,6 +2,7 @@ import $ from "jquery";
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
 import "./styles.css";
+import "./common.css";
 import Tippy from '@tippyjs/react';
 import 'tippy.js/dist/tippy.css';
 
@@ -12,12 +13,10 @@ import Recents from "./recents.js";
 import Welcome from "./welcome.js";
 import AddPeer from "./AddPeer.js";
 import Chat from "./chat.js";
-import { Icon, Switcher,BarButton } from "./global.js";
+import { Icon, Switcher, BarButton } from "./global.js";
 
-window.peers=pine.data.store('peers.json');
-window.chats=pine.data.store('chats.json');
-window.info = pine.data.dictionary('info.json');
 state.init();
+
 window.state = state;
 window.actions = actions;
 
@@ -69,26 +68,26 @@ class Nav extends React.Component {
                     <div className="handle"></div>
                     <div className="center">
                         <Switcher opts={{ 'Recents': 'recents', 'All': 'allPeers' }}
-                     selected={this.state.currentPage}
-                     onChange={(opt)=>{
-                if(opt=='recents'){
-                    window.actions('OPEN_RECENTS');
-                }
-                else{
-                    window.actions('OPEN_ALLPEERS');
-                }
-            }} /></div>
-                     <div className="handle"></div> 
+                            selected={this.state.currentPage}
+                            onChange={(opt) => {
+                                if (opt == 'recents') {
+                                    window.actions('OPEN_RECENTS');
+                                }
+                                else {
+                                    window.actions('OPEN_ALLPEERS');
+                                }
+                            }} /></div>
+                    <div className="handle"></div>
                 </div>
-           
-             <div className="center">
-                 <BarButton icon="Control_Add" onClick={()=>{
-                      window.actions('OPEN_ADDPEER');
-                 }} />
-             </div>
+
+                <div className="center">
+                    <BarButton icon="Control_Add" onClick={() => {
+                        window.actions('OPEN_ADDPEER');
+                    }} />
+                </div>
             </div>)
         }
-        else{
+        else {
             return (<div></div>)
         }
     }
@@ -109,3 +108,62 @@ ReactDOM.render(
     , document.getElementById('root')
 );
 
+win.resize = function () {
+    if (win.isMaximized()) {
+        win.unmaximize();
+    }
+    else {
+        win.maximize();
+    }
+}
+win.showControls = function () {
+    $('#controls').css({
+        display: 'flex'
+    })
+    $('#controls').html(getControls());
+}
+win.hideControls = function () {
+    $('#controls').css({
+        display: 'none'
+    })
+}
+function getControls() {
+    var red = '<div class="bar_butts bar_butt_red" onClick=win.close()></div>';
+    var yellow = '<div class="bar_butts bar_butt_yellow" onClick=win.minimize()></div>';
+    var green = '<div class="bar_butts bar_butt_green" onClick=win.resize()></div>';
+    var grey = '<div class="bar_butts" ></div>';
+    var controls = red;
+    if (win.isMinimizable()) {
+        controls += yellow;
+    } else {
+        controls += grey;
+    }
+    if (win.isMaximizable() && win.isResizable()) {
+        controls += green;
+    }
+    return (controls)
+}
+function getControlsDisabled() {
+    var grey = '<div class="bar_butts" ></div>';
+    var controls = grey + grey;
+    if (win.isMaximizable()) {
+        controls += grey;
+    }
+    return (controls)
+}
+
+$('#controls').html(getControls());
+
+win.on('focus', () => {
+    $('#controls').html(getControls());
+})
+
+win.updateControls = function () {
+    $('#controls').html(getControls());
+}
+
+win.on('blur', () => {
+    $('#controls').html(getControlsDisabled());
+})
+
+win.show();

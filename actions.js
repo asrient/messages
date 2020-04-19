@@ -1,4 +1,3 @@
-var crypto = pine.include('crypto');
 
 function code(n = 5) {
     return crypto.randomBytes(n).toString('hex');
