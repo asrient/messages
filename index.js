@@ -11,14 +11,20 @@ import actions from "./actions.js";
 
 import Recents from "./recents.js";
 import Welcome from "./welcome.js";
-import AddPeer from "./AddPeer.js";
+import AddPeer from "./addPeer.js";
+import Contacts from "./contacts.js";
 import Chat from "./chat.js";
+import Window from "./window.js";
+import QuickPannel from "./quickPannel.js";
+import Online from "./online.js";
 import { Icon, Switcher, BarButton } from "./global.js";
 
 state.init();
 
 window.state = state;
 window.actions = actions;
+
+const dev = 'desktop';
 
 class Nav extends React.Component {
     constructor(props) {
@@ -47,63 +53,60 @@ class Nav extends React.Component {
         if (this.state.currentPage == 'recents') {
             return (<Recents relay={this.state.relayToPage} />)
         }
-        if (this.state.currentPage == 'welcome') {
-            return (<Welcome relay={this.state.relayToPage} />)
-        }
-        if (this.state.currentPage == 'addPeer') {
-            return (<AddPeer relay={this.state.relayToPage} />)
+        if (this.state.currentPage == 'contacts') {
+            return (<Contacts relay={this.state.relayToPage} />)
         }
         if (this.state.currentPage == 'chat') {
             return (<Chat relay={this.state.relayToPage} />)
+        }
+        if (this.state.currentPage == 'online') {
+            return (<Online relay={this.state.relayToPage} />)
         }
         else {
             return (<div className="center" style={{ height: '16rem' }}>🚧</div>)
         }
     }
-    getSwitcher = () => {
-        if (this.state.currentPage == 'recents' || this.state.currentPage == 'allPeers') {
-            return (<div id="home_head">
-                <div></div>
-                <div id="home_h1">
-                    <div className="handle"></div>
-                    <div className="center">
-                        <Switcher opts={{ 'Recents': 'recents', 'All': 'allPeers' }}
-                            selected={this.state.currentPage}
-                            onChange={(opt) => {
-                                if (opt == 'recents') {
-                                    window.actions('OPEN_RECENTS');
-                                }
-                                else {
-                                    window.actions('OPEN_ALLPEERS');
-                                }
-                            }} /></div>
-                    <div className="handle"></div>
-                </div>
-
-                <div className="center">
-                    <BarButton icon="Control_Add" onClick={() => {
-                        window.actions('OPEN_ADDPEER');
-                    }} />
-                </div>
-            </div>)
-        }
-        else {
-            return (<div></div>)
-        }
+    getTabsBar = () => {
+        return (<div className="center">Tabs</div>)
     }
     render() {
-        return (
-            <div>
-                {this.getSwitcher()}
-                {this.getPage()}
-            </div>
-        )
+        if (this.state.currentPage == 'welcome') {
+            return (<Welcome relay={this.state.relayToPage} />)
+        }
+        else {
+            if (dev == 'desktop') {
+                return (
+                    <div id="nav_bdy_desktop">
+                        <QuickPannel />
+                        {this.getPage()}
+                        <div id="nav_onlineBar"><Online /></div>
+                    </div>
+                )
+            }
+            else {
+                if (this.state.currentPage != 'chat') {
+                    return (
+                        <div id="nav_bdy_mobile">
+                            {this.getPage()}
+                            {this.getTabsBar()}
+                        </div>
+                    )
+                }
+                else {
+                    <div id="nav_bdy_mobile">
+                        {this.getPage()}
+                    </div>
+                }
+            }
+        }
+
     }
 }
 
 ReactDOM.render(
     <div>
         <Nav />
+        <Window />
     </div>
     , document.getElementById('root')
 );

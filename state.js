@@ -62,6 +62,7 @@ function reducers(state = 0, action) {
                 version: '1.0',
                 instanceCode: code(8),
                 nav: { page: 'recents', relay: null },
+                window: { page: null, relay: null },
                 info: window.info.get(),
                 peers: {},
                 recents: { init: false, list: [] },
@@ -96,8 +97,22 @@ var api = {
     },
     openPage: function (page, relay) {
         var data = store.getState();
+        data.window.page = null;
+        data.window.relay = null;
         data.nav.page = page;
         data.nav.relay = relay;
+        store.dispatch({ type: 'UPDATE', state: data });
+    },
+    openWindow: function (page, relay) {
+        var data = store.getState();
+        data.window.page = page;
+        data.window.relay = relay;
+        store.dispatch({ type: 'UPDATE', state: data });
+    },
+    closeWindow: function(){
+        var data = store.getState();
+        data.window.page = null;
+        data.window.relay = null;
         store.dispatch({ type: 'UPDATE', state: data });
     },
     getPeer: function (peerId, cb) {
@@ -420,7 +435,7 @@ var api = {
         this.getPeer(peerId, (peer) => {
             if (peer != null) {
                 var prev = null;
-                if(peer.sessionId!=null){
+                if (peer.sessionId != null) {
                     prev = peer.sessionId.split('.')[0]
                 }
                 var next = sessionId.split('.')[0];

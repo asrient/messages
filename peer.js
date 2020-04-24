@@ -67,9 +67,9 @@ class Peer extends React.Component {
     }
     render() {
         return (<div className="pr">
-            <div className="center"><Icon className="size-m" src="assets://icons/QuickActions_Contact.png" /></div>
+            <div className="center"><Icon className="size-l" src="assets://icons/QuickActions_Contact.png" /></div>
             <div>
-                <div className="ink-black base-semibold size-xs">{this.props.username}</div>
+                <div className="ink-black base-regular size-xs">{this.props.username}</div>
                 <div className="ink-dark base-light size-xs" style={{ fontSize: '0.8rem',display:'flex' }}>
                     {this.getStatus()}
                     {this.props.devicename}

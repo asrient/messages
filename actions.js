@@ -1,3 +1,4 @@
+const dev='desktop';
 
 function code(n = 5) {
     return crypto.randomBytes(n).toString('hex');
@@ -7,11 +8,18 @@ function actions(act, data) {
     if (act == 'OPEN_RECENTS') {
         window.state.openPage('recents', data);
     }
-    else if (act == 'OPEN_ALLPEERS') {
-        window.state.openPage('allPeers', data);
+    else if (act == 'OPEN_CONTACTS') {
+        if(dev=='desktop'){
+            window.state.openWindow('contacts', data);
+        }
+        else
+        window.state.openPage('contacts', data);
     }
     else if (act == 'OPEN_ADDPEER') {
-        window.state.openPage('addPeer', data);
+        window.state.openWindow('addPeer', data);
+    }
+    else if (act == 'CLOSE_WINDOW') {
+        window.state.closeWindow();
     }
     else if (act == 'OPEN_CHAT') {
         window.state.openPage('chat', data);

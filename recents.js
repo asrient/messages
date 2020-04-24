@@ -50,9 +50,8 @@ class Recents extends React.Component {
         })
     }
     render() {
-        return (<div>
-            <div style={{ height: '3rem' }}></div>
-            <div id="re_title" className="size-xl ink-black base-bold">Recents</div>
+        return (<div id="re">
+            <div id="re_title" className="size-s ink-black base-regular handle center">Recents</div>
         <div>{this.getList()}</div>
         </div>)
     }

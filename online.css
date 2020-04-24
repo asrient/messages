@@ -1,0 +1,10 @@
+#onl{
+    display: grid;
+    grid-template-rows: 3rem auto;
+    height: 100%;
+    width: 100%;
+}
+#onl_title{
+    padding: 0.4rem;
+    padding-bottom: 0.3rem;
+}

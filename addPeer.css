@@ -13,7 +13,7 @@
     grid-template-columns: 5rem auto 5rem;
 }
 #ap_top{
-    position: fixed;
+    position: sticky;
     top:0px;
     left:0px;
     display: grid;

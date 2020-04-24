@@ -203,7 +203,6 @@ class Chat extends React.Component {
         if (this.state.peer != null) {
             return (<div id="cht" onScroll={this.handleScroll}>
                 <div id="cht_head">
-                    <div></div>
                     <div className="center" style={{ justifyContent: 'flex-end' }}>
                         <BarButton icon="Control_GoBack" onClick={() => {
                             window.actions('OPEN_RECENTS');
@@ -219,16 +218,17 @@ class Chat extends React.Component {
                         </div>
 
                     </div>
-                    <div className="handle"></div>
                     <div className="center"><BarButton icon="Preferences_Advanced" onClick={() => {
                         window.state.init2(this.props.relay, true);
-                    }} /></div>
-                    <div className="handle"></div>
+                    }} />
+                    </div>
                 </div>
-                <div style={{ height: '6rem' }}></div>
+                <div id="cht_bdy">
+                  <div style={{ height: '6rem' }}></div>
                 <div>{this.getLoader()}</div>
                 {this.showChat()}
-                <div style={{ height: '4rem' }}></div>
+                <div style={{ height: '4rem' }}></div>  
+                </div>
                 <div id="cht_bar">
                     <div className="center">
                         <TextareaAutosize autoFocus maxRows={5} placeholder="Message" type="text" className="cht_input" value={this.state.text} onChange={this.change} />

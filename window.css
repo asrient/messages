@@ -1,0 +1,46 @@
+#win_bg{
+    position: fixed;
+    top:0px;
+    left:0px;
+    height: 100vh;
+    width: 100vw;
+    background-color: rgba(0, 0, 0, 0.07);
+    z-index: 3;
+}
+#win_holder{
+    position: fixed;
+    top:0px;
+    left:0px;
+    height: 100vh;
+    width: 100vw;
+    z-index: 3;
+}
+#win{
+    position: relative;
+    z-index: 5;
+    animation-name: pop;
+  animation-duration: 250ms;
+}
+@keyframes pop{
+    0% {transform: scale(0.7);}
+    50%{transform: scale(1.1);}
+    100% {transform: scale(1);}
+}
+.win_sheet{
+    border-radius: 2rem;
+    min-height: 32rem;
+    max-height: 100vh;
+    min-width: 27rem;
+    max-width: 100vw;
+    overflow: auto;
+    background-color: #ffffff80;
+    backdrop-filter: blur(20px);
+    box-shadow: 0px 0px 14px 9px #00000042;
+}
+@media(max-width:600px){
+    .win_sheet{
+        border-radius: 0rem;
+        height: 100vh;
+        width: 100vw;
+    }
+}

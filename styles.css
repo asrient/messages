@@ -1,6 +1,6 @@
 #home_head{
     display: grid;
-    grid-template-columns: 3.5rem auto 3.5rem;
+    grid-template-columns: 5rem auto 5rem;
     height: 3rem;
     position: fixed;
     top:0px;
@@ -30,4 +30,27 @@
     font-weight: 300;
     background-color: #6e6e6e;
     border-radius: 0.8rem;
+}
+
+#nav_bdy_desktop{
+    display: grid;
+    grid-template-columns: 5rem auto 20rem;
+    height: 100vh;
+    width: 100%;
+    position: fixed;
+    top:0px;
+}
+#nav_onlineBar{
+    height: 100%;
+    width: 100%;
+    background-color: rgb(230, 230, 230);
+}
+
+@media(max-width:800px){
+    #nav_onlineBar{
+        display: none;
+    }
+    #nav_bdy_desktop{
+        grid-template-columns: 5rem auto;
+    }
 }
