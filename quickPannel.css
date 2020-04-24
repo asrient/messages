@@ -25,3 +25,6 @@
     grid-template-rows: 2rem auto;
     background-color: rgb(238, 238, 238);
 }
+.qp_circle_active{
+    box-shadow: 0px 0px 4px 2px #239effd4;
+}

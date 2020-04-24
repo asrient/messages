@@ -301,6 +301,10 @@ var api = {
                 };
                 airPeer.request(airId, buildMessage(req), (ress) => {
                     var res = parseMessage(ress.body);
+                    var icn="assets://icons/QuickActions_Contact.png";
+                    if(res.icon!='defaut'&&res.icon!=undefined){
+                        //download the icon and update the recs later
+                    }
                     var dt = new Date;
                     var time = dt.getTime();
                     var peer = {
@@ -309,7 +313,7 @@ var api = {
                         secret,
                         username: res.devicename,
                         devicename: res.devicename,
-                        icon: res.icon,
+                        icon: icn,
                         chatStatus: 'SAYHI',
                         sessionId,
                         isTyping: false,
@@ -409,7 +413,16 @@ var api = {
                                     update.username = res.username;
                                 }
                                 if (res.icon != undefined) {
-                                    update.icon = res.icon;
+                                    if(res.icon=='default'){
+                                        update.icon = "assets://icons/QuickActions_Contact.png";
+                                    }
+                                    else{
+                                        if(peer.icon!=res.icon){
+                                            //get icon nd update recs later
+                                        }
+                                        else
+                                         update.icon = res.icon;
+                                    }
                                 }
                                 this.updatePeer(peerId, update, peer);
                             }
