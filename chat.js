@@ -7,7 +7,7 @@ import { Icon, Switcher, BarButton, Loading } from "./global.js";
 class Chat extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { list: [], text: '', peer: null, me: null, allLoaded: false, listLength: 0 };
+        this.state = { list: [], text: '', peer: null, me: null, allLoaded: false, listLength: 0, peerId: null };
         this.isLoading = false;
         this.bottomAnchor = true;
         this.lastScrollHt = 0;
@@ -21,7 +21,7 @@ class Chat extends React.Component {
             //console.warn('loading..',this.state.allLoaded,this.isLoading);
             this.isLoading = true;
             window.setTimeout(() => {
-                window.state.loadChat(this.props.relay, () => {
+                window.state.loadChat(this.state.peerId, () => {
                     this.isLoading = false;
                 });
             }, 20);
@@ -30,18 +30,32 @@ class Chat extends React.Component {
     parseState() {
         var st = window.state.getState();
         var state = {};
-        if (st.chats[this.props.relay] != undefined) {
-            state.list = st.chats[this.props.relay].list;
-            state.listLength = state.list.length;
-            if (state.listLength != this.state.listLength)
+        state.peerId = st.nav.relay;
+        var peerId = st.nav.relay;
+        if (peerId != undefined && peerId != null) {    
+                if (st.chats[peerId] != undefined) {
+                    state.list = st.chats[peerId].list;
+                    state.listLength = state.list.length;
+                    if (state.listLength != this.state.listLength)
+                        this.listUpdated = true;
+                    state.allLoaded = st.chats[peerId].allLoaded;
+                }
+                else{
+                    state.list=[];
+                state.allLoaded=false;
+                state.listLength=0;
                 this.listUpdated = true;
-            state.allLoaded = st.chats[this.props.relay].allLoaded;
+                window.state.initChat(peerId); 
+                }
+           
+            window.state.getPeer(peerId, (peer) => {
+                state.peer = peer;
+                state.me = st.info;
+                this.setState({ ...this.state, ...state });
+            })
         }
-        window.state.getPeer(this.props.relay, (peer) => {
-            state.peer = peer;
-            state.me = st.info;
-            this.setState({ ...this.state, ...state });
-        })
+        // else
+        // console.error("Chat parseState: peerId is ",peerId);
     }
     componentDidUpdate(pervProp, prevState) {
 
@@ -52,7 +66,6 @@ class Chat extends React.Component {
         }
     }
     componentDidMount() {
-        window.state.initChat(this.props.relay);
         this.parseState();
         this.unsub = window.state.subscribe(() => {
             this.parseState();
@@ -157,7 +170,7 @@ class Chat extends React.Component {
             type: 'text'
         }
         if (txt != '') {
-            window.actions('SEND_CHAT', { peerId: this.props.relay, chat });
+            window.actions('SEND_CHAT', { peerId: this.state.peerId, chat });
             this.bottomAnchor = true;
             this.setState({ ...this.state, text: '' });
         }
@@ -219,15 +232,15 @@ class Chat extends React.Component {
 
                     </div>
                     <div className="center"><BarButton icon="Preferences_Advanced" onClick={() => {
-                        window.state.init2(this.props.relay, true);
+                        window.state.init2(this.state.peerId, true);
                     }} />
                     </div>
                 </div>
                 <div id="cht_bdy">
-                  <div style={{ height: '6rem' }}></div>
-                <div>{this.getLoader()}</div>
-                {this.showChat()}
-                <div style={{ height: '4rem' }}></div>  
+                    <div style={{ height: '6rem' }}></div>
+                    <div>{this.getLoader()}</div>
+                    {this.showChat()}
+                    <div style={{ height: '4rem' }}></div>
                 </div>
                 <div id="cht_bar">
                     <div className="center">
