@@ -13,6 +13,7 @@ import Recents from "./recents.js";
 import Welcome from "./welcome.js";
 import AddPeer from "./addPeer.js";
 import Contacts from "./contacts.js";
+import Settings from "./settings.js";
 import Chat from "./chat.js";
 import Window from "./window.js";
 import QuickPannel from "./quickPannel.js";
@@ -61,6 +62,9 @@ class Nav extends React.Component {
         }
         if (this.state.currentPage == 'online') {
             return (<Online relay={this.state.relayToPage} />)
+        }
+        if (this.state.currentPage == 'settings') {
+            return (<Settings relay={this.state.relayToPage} />)
         }
         else {
             return (<div className="center" style={{ height: '16rem' }}>🚧</div>)

@@ -15,6 +15,13 @@ function actions(act, data) {
         else
         window.state.openPage('contacts', data);
     }
+    else if (act == 'OPEN_SETTINGS') {
+        if(dev=='desktop'){
+            window.state.openWindow('settings', data);
+        }
+        else
+        window.state.openPage('settings', data);
+    }
     else if (act == 'OPEN_ADDPEER') {
         window.state.openWindow('addPeer', data);
     }

@@ -65,6 +65,9 @@ class QuickPannel extends React.Component {
                         <div className="qp_circle center" onClick={() => {
                             window.actions('OPEN_CONTACTS');
                         }} ><Icon src="assets://icons/TabBar_Contacts.png" /></div>
+                        <div className="qp_circle center" onClick={() => {
+                            window.actions('OPEN_SETTINGS');
+                        }} ><Icon src="assets://icons/settings.png" /></div>
                     </div>
                 </div>
             </div>

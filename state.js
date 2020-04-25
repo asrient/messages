@@ -109,7 +109,7 @@ var api = {
         data.window.relay = relay;
         store.dispatch({ type: 'UPDATE', state: data });
     },
-    closeWindow: function(){
+    closeWindow: function () {
         var data = store.getState();
         data.window.page = null;
         data.window.relay = null;
@@ -301,8 +301,8 @@ var api = {
                 };
                 airPeer.request(airId, buildMessage(req), (ress) => {
                     var res = parseMessage(ress.body);
-                    var icn="assets://icons/QuickActions_Contact.png";
-                    if(res.icon!='defaut'&&res.icon!=undefined){
+                    var icn = "assets://icons/QuickActions_Contact.png";
+                    if (res.icon != 'defaut' && res.icon != undefined) {
                         //download the icon and update the recs later
                     }
                     var dt = new Date;
@@ -413,15 +413,15 @@ var api = {
                                     update.username = res.username;
                                 }
                                 if (res.icon != undefined) {
-                                    if(res.icon=='default'){
+                                    if (res.icon == 'default') {
                                         update.icon = "assets://icons/QuickActions_Contact.png";
                                     }
-                                    else{
-                                        if(peer.icon!=res.icon){
+                                    else {
+                                        if (peer.icon != res.icon) {
                                             //get icon nd update recs later
                                         }
                                         else
-                                         update.icon = res.icon;
+                                            update.icon = res.icon;
                                     }
                                 }
                                 this.updatePeer(peerId, update, peer);
@@ -699,6 +699,9 @@ var api = {
                 respond(300, 'INIT1 REQUIRED');
             }
         })
+    },
+    resourceHandler: function (airId, pth, respond) {
+
     }
 }
 
@@ -722,6 +725,9 @@ airPeer.on('request', (req) => {
     }
     else if (data.type == 'CHAT') {
         api.receiveChat(req.from, data.chat, req.respond);
+    }
+    else if (data.type.split(':')[0] == 'resource') {
+        api.resourceHandler(req.from, data.type.split(':')[1], req.respond);
     }
 })
 

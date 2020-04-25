@@ -196,14 +196,14 @@ class AddPeer extends React.Component {
                         New message
                         </div>
                     <div className="center">
-                        <div className="size-xs ink-red base-semilight" onClick={() => {
-                            window.actions('OPEN_RECENTS');
-                        }}>Cancel
+                        <div className="size-xs ink-blue base-semilight" onClick={() => {
+                            window.actions('CLOSE_WINDOW');
+                        }}>Done
                       </div>
                     </div>
                 </div>
             </div>
-            <div style={{ paddingTop: '4.5rem' }}>
+            <div style={{ textAlign: "left" }}>
                 <div>
                     <Nearby />
                 </div>

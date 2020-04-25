@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import ReactDOM from "react-dom";
 import { Icon, Switcher, BarButton } from "./global.js";
 import AddPeer from "./addPeer.js";
+import Settings from "./settings.js";
 import "./window.css";
 class Window extends React.Component {
     constructor(props) {
@@ -24,6 +25,9 @@ class Window extends React.Component {
     content() {
         if (this.state.page == 'addPeer') {
             return (<div className="win_sheet"><AddPeer /></div>)
+        }
+        else if (this.state.page == 'settings') {
+            return (<div className="win_sheet"><Settings /></div>)
         }
     }
     render() {
