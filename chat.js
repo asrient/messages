@@ -214,6 +214,10 @@ class Chat extends React.Component {
     }
     render() {
         if (this.state.peer != null) {
+            var icn = this.state.peer.icon;
+            if (icn == null || icn == 'default') {
+                icn = window.state.DP;
+            }
             return (<div id="cht" onScroll={this.handleScroll}>
                 <div id="cht_head">
                     <div className="center" style={{ justifyContent: 'flex-end' }}>
@@ -223,7 +227,7 @@ class Chat extends React.Component {
                     </div>
                     <div className="center handle" id="cht_title">
                         <div className="center">
-                            <Icon style={{ fontSize: '1.8rem', margin: '0px' }} src={"assets://icons/QuickActions_Contact.png"} />
+                            <Icon style={{ fontSize: '2rem', margin: '0px', borderRadius:'100%' }} src={icn} />
                         </div>
                         <div className="center-col" style={{ alignItems: 'flex-start', paddingLeft: '0.5rem' }}>
                             <div style={{ fontSize: '0.9rem' }} className="base-regular ink-black">{this.state.peer.username}</div>

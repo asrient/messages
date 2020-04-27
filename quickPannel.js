@@ -44,8 +44,7 @@ class QuickPannel extends React.Component {
                     html.push(<div key={peerId} onClick={() => {
                         //console.log("opening chat",peerId)
                         window.actions('OPEN_CHAT', peerId);
-                    }} className={cls}>
-                        <Icon src={peer.icon} style={{ height: "max-content" }} />
+                    }} className={cls} style={{backgroundImage:'url('+peer.icon+')'}}>
                     </div>)
             }
 

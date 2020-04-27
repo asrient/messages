@@ -17,6 +17,8 @@
     background-color: rgb(199, 199, 199);
     border-radius: 100%;
     margin-bottom: 0.6rem;
+    background-position: center;
+    background-size: cover;
 }
 #qp_holder{
     height: 100%;

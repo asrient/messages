@@ -1,5 +1,7 @@
 import { createStore } from 'redux';
 
+const dp = "assets://icons/dp.png"
+
 function code(n = 5) {
     return crypto.randomBytes(n).toString('hex');
 }
@@ -85,6 +87,7 @@ function reducers(state = 0, action) {
 let store = createStore(reducers);
 
 var api = {
+    DP:dp,
     getState: store.getState,
     subscribe: store.subscribe,
     parseAirId,
@@ -160,12 +163,35 @@ var api = {
                     //TODO: put it on allPeers list
                     store.dispatch({ type: 'UPDATE', state: st });
                     cb(true);
+                    this.getIcon(peerId + ':' + peer.sessionId, peer.iconKey);
                 })
             }
             else {
                 cb(false)
             }
         })
+    },
+    getIcon: function (airId, iconKey) {
+        if (iconKey != 'default') {
+            var req = {
+                type: 'RESOURCE',
+                url: iconKey
+            }
+            airPeer.request(airId, buildMessage(req), (res) => {
+                var data = res.body;
+                var filename = code(8) + '.png';
+                var pth = filesDir + '/dp/' + filename;
+                var url = 'files://dp/' + filename;
+                fs.writeFile(pth, data, (err) => {
+                    console.warn("DP updated!", pth, err);
+                    this.updatePeer(airId.split(':')[0] + ':' + airId.split(':')[1], { icon: url });
+                    //TODO: remove prev icon
+                })
+            })
+        }
+        else {
+            this.updatePeer(airId.split(':')[0] + ':' + airId.split(':')[1], { icon: dp });
+        }
     },
     updatePeer: function (peerId, prop, peerObj) {
         var idObj = parseAirId(peerId);
@@ -301,10 +327,6 @@ var api = {
                 };
                 airPeer.request(airId, buildMessage(req), (ress) => {
                     var res = parseMessage(ress.body);
-                    var icn = "assets://icons/QuickActions_Contact.png";
-                    if (res.icon != 'defaut' && res.icon != undefined) {
-                        //download the icon and update the recs later
-                    }
                     var dt = new Date;
                     var time = dt.getTime();
                     var peer = {
@@ -313,7 +335,8 @@ var api = {
                         secret,
                         username: res.devicename,
                         devicename: res.devicename,
-                        icon: icn,
+                        iconKey: res.icon,
+                        icon: dp,
                         chatStatus: 'SAYHI',
                         sessionId,
                         isTyping: false,
@@ -343,7 +366,8 @@ var api = {
                     secret: req.secret,
                     username: req.devicename,
                     devicename: req.devicename,
-                    icon: req.icon,
+                    iconKey: req.icon,
+                    icon: dp,
                     chatStatus: 'SAYHI',
                     sessionId: idObj.sessionId,
                     isTyping: false,
@@ -413,15 +437,11 @@ var api = {
                                     update.username = res.username;
                                 }
                                 if (res.icon != undefined) {
-                                    if (res.icon == 'default') {
-                                        update.icon = "assets://icons/QuickActions_Contact.png";
-                                    }
-                                    else {
-                                        if (peer.icon != res.icon) {
-                                            //get icon nd update recs later
-                                        }
-                                        else
-                                            update.icon = res.icon;
+                                    update.iconKey = res.icon;
+                                    if (peer.iconKey != res.icon) {
+                                        //get icon nd update recs later
+                                        console.warn("getting icon", peer.iconKey, res.icon);
+                                        this.getIcon(airId, res.icon);
                                     }
                                 }
                                 this.updatePeer(peerId, update, peer);
@@ -701,7 +721,17 @@ var api = {
         })
     },
     resourceHandler: function (airId, pth, respond) {
-
+        var loc = resources.getPath(pth);
+        if (loc == null) {
+            respond(404, "Not Found");
+        }
+        else {
+            fs.readFile(loc, (err, data) => {
+                if (data != null) {
+                    respond(200, data);
+                }
+            })
+        }
     }
 }
 
@@ -726,8 +756,8 @@ airPeer.on('request', (req) => {
     else if (data.type == 'CHAT') {
         api.receiveChat(req.from, data.chat, req.respond);
     }
-    else if (data.type.split(':')[0] == 'resource') {
-        api.resourceHandler(req.from, data.type.split(':')[1], req.respond);
+    else if (data.type == 'RESOURCE') {
+        api.resourceHandler(req.from, data.url, req.respond);
     }
 })
 
