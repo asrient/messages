@@ -680,13 +680,13 @@ var api = {
                         }
                         var ress = {};
                         chat.isDelivered = true;
-                        var chatStatus = 'DELIVERED';
+                        var chatStatus = 'UNREAD';
                         ress.deliveredOn = time;
                         chat.deliveredOn = time;
                         var st = store.getState();
                         if (st.nav.page == 'chat' && st.nav.relay == peerId) {
                             ress.isRead = true;
-                            chatStatus = 'OPENED';
+                            chatStatus = 'RECEIVED';
                         }
                         chat.to = st.info.uid + ':' + st.info.host;
                         chat.from = peerId;
