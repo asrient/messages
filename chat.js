@@ -3,6 +3,7 @@ import TextareaAutosize from 'react-textarea-autosize';
 import React, { Component } from "react";
 import "./chat.css";
 import { Icon, Switcher, BarButton, Loading } from "./global.js";
+import addFile from "./addFile.js";
 
 class Chat extends React.Component {
     constructor(props) {
@@ -32,22 +33,22 @@ class Chat extends React.Component {
         var state = {};
         state.peerId = st.nav.relay;
         var peerId = st.nav.relay;
-        if (peerId != undefined && peerId != null) {    
-                if (st.chats[peerId] != undefined) {
-                    state.list = st.chats[peerId].list;
-                    state.listLength = state.list.length;
-                    if (state.listLength != this.state.listLength)
-                        this.listUpdated = true;
-                    state.allLoaded = st.chats[peerId].allLoaded;
-                }
-                else{
-                    state.list=[];
-                state.allLoaded=false;
-                state.listLength=0;
+        if (peerId != undefined && peerId != null) {
+            if (st.chats[peerId] != undefined) {
+                state.list = st.chats[peerId].list;
+                state.listLength = state.list.length;
+                if (state.listLength != this.state.listLength)
+                    this.listUpdated = true;
+                state.allLoaded = st.chats[peerId].allLoaded;
+            }
+            else {
+                state.list = [];
+                state.allLoaded = false;
+                state.listLength = 0;
                 this.listUpdated = true;
-                window.state.initChat(peerId); 
-                }
-           
+                window.state.initChat(peerId);
+            }
+
             window.state.getPeer(peerId, (peer) => {
                 state.peer = peer;
                 state.me = st.info;
@@ -138,10 +139,28 @@ class Chat extends React.Component {
                 }
             }
         }
-
+        var body = () => {
+            if (chat.type == 'text') {
+                return (<div className="cht_text base-light" style={{ background: bgcolor, color: txtcolor, marginBottom: space }} >
+                    {chat.text}
+                </div>)
+            }
+            else {
+                ///////////
+                return (
+                    <div className="cht_text cht_file base-light center-col"
+                        style={{ background: bgcolor, color: txtcolor, marginBottom: space }}
+                        onClick={() => {
+                            this.openFile(chat.fileid, chat.mime, chat.filename,chat.size)
+                        }} >
+                        <div>{chat.filename}</div>
+                        <div>{chat.mime}</div>
+                    </div>)
+            }
+        }
         return (<div key={chat.key + chat.sentOn}>
             <div className="cht_textHolder" style={{ justifyContent: dir }}>
-                <div className="cht_text base-light" style={{ background: bgcolor, color: txtcolor, marginBottom: space }} >{chat.text}</div>
+                {body()}
             </div>
             {timeStamp()}
         </div>)
@@ -174,6 +193,26 @@ class Chat extends React.Component {
             this.bottomAnchor = true;
             this.setState({ ...this.state, text: '' });
         }
+    }
+    handleSendFile = () => {
+        addFile(this.sendFile);
+    }
+    sendFile = (fid, mime, filename, size) => {
+        var chat = {
+            filename,
+            fileid: fid,
+            mime,
+            size,
+            type: 'file'
+        }
+        window.actions('SEND_CHAT', { peerId: this.state.peerId, chat });
+        this.bottomAnchor = true;
+        //this.setState({ ...this.state, text: '' });
+    }
+    openFile = (fid, mime, filename,size) => {
+        console.log("OPENING FILE", fid, mime, filename,size);
+        /////////// Show preview window here
+        window.actions('SAVE_FILE', { fileid: fid, filename,size, airId: this.state.peerId + ':' + this.state.peer.sessionId })
     }
     change = (event) => {
         var text = event.target.value;
@@ -227,7 +266,7 @@ class Chat extends React.Component {
                     </div>
                     <div className="center handle" id="cht_title">
                         <div className="center">
-                            <Icon style={{ fontSize: '2rem', margin: '0px', borderRadius:'100%' }} src={icn} />
+                            <Icon style={{ fontSize: '2rem', margin: '0px', borderRadius: '100%' }} src={icn} />
                         </div>
                         <div className="center-col" style={{ alignItems: 'flex-start', paddingLeft: '0.5rem' }}>
                             <div style={{ fontSize: '0.9rem' }} className="base-regular ink-black">{this.state.peer.username}</div>
@@ -248,9 +287,22 @@ class Chat extends React.Component {
                 </div>
                 <div id="cht_bar">
                     <div className="center">
-                        <TextareaAutosize autoFocus maxRows={5} placeholder="Message" type="text" className="cht_input" value={this.state.text} onChange={this.change} />
-            &nbsp;
-            {this.getSendButton()}
+                        <div className="cht_file_btn center"
+                        onClick={()=>{this.handleSendFile()}}
+                        >
+                        <Icon style={{ fontSize: '1.2rem', margin: '0px' }} src="assets://icons/SystemEntity_Folder.png" />
+                        </div>
+                        &nbsp;
+                        <TextareaAutosize autoFocus 
+                        maxRows={5} 
+                        placeholder="Message" 
+                        type="text" 
+                        className="cht_input" 
+                        value={this.state.text} 
+                        onChange={this.change} 
+                        />
+                        &nbsp;
+                        {this.getSendButton()}
                     </div>
                 </div>
 

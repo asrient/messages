@@ -37,6 +37,9 @@ function actions(act, data) {
     else if (act == 'SEND_CHAT') {
         window.state.sendChat(data.peerId, data.chat);
     }
+    else if (act == 'SAVE_FILE') {
+        window.state.downloadResource(data.airId, data.fileid, data.filename,data.size);
+    }
 }
 
 export default actions;

@@ -81,6 +81,15 @@
     position: relative;
     -webkit-user-select: text;
 }
+.cht_file{
+    padding: 1.3rem 1rem;
+}
+.cht_file_btn{
+background-color: #ececec;
+border-radius: 1rem;
+border: rgba(0, 0, 0, 0.075) solid thin;
+padding: 0.2rem 0.6rem;
+}
 .cht_text:nth-last-of-type(1){
     overflow-anchor: auto;
 }

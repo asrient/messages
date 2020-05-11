@@ -1,4 +1,5 @@
 import { createStore } from 'redux';
+import mimeCodes from "./mimeCodes.js";
 
 const dp = "assets://icons/dp.png"
 
@@ -87,7 +88,7 @@ function reducers(state = 0, action) {
 let store = createStore(reducers);
 
 var api = {
-    DP:dp,
+    DP: dp,
     getState: store.getState,
     subscribe: store.subscribe,
     parseAirId,
@@ -717,6 +718,32 @@ var api = {
             else {
                 console.error("Cant receive chat: unknown peerId");
                 respond(300, 'INIT1 REQUIRED');
+            }
+        })
+    },
+    getResource: function (airId, fid, cb) {
+        var req = {
+            type: 'RESOURCE',
+            url: fid
+        }
+        airPeer.request(airId, buildMessage(req), (res) => {
+            var data = res.body;
+            if (res.status >= 200 && res.status <= 300) {
+                const mime = mimeCodes.getMimeByCode(res.status);
+                cb(mime, data);
+            }
+            else {
+                cb(null);
+            }
+        })
+    },
+    downloadResource: function (airId, fid, filename,size) {
+        //////// show save dialog here
+        this.getResource(airId, fid, (mime, data) => {
+            if (mime != null && mime != undefined) {
+                fs.writeFile(dirs.desktop + '/' + filename, data, () => {
+                    console.log("FILE DOWNLOADED!");
+                })
             }
         })
     },
