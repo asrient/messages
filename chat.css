@@ -84,6 +84,16 @@
 .cht_file{
     padding: 1.3rem 1rem;
 }
+.clickable{
+    cursor: pointer;
+}
+.clickable:hover{
+    opacity: 0.8;
+}
+.cht_file_size{
+    font-size: 0.7rem;
+    color:rgb(65, 65, 65);
+}
 .cht_file_btn{
 background-color: #ececec;
 border-radius: 1rem;

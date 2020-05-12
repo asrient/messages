@@ -4,6 +4,7 @@ import React, { Component } from "react";
 import "./chat.css";
 import { Icon, Switcher, BarButton, Loading } from "./global.js";
 import addFile from "./addFile.js";
+import mimeCodes from './mimeCodes.js';
 
 class Chat extends React.Component {
     constructor(props) {
@@ -147,14 +148,16 @@ class Chat extends React.Component {
             }
             else {
                 ///////////
+                const ficon='assets://ficons/'+mimeCodes.getFileIconFromMime(chat.mime);
+                const size=prettyBytes(chat.size||0);
                 return (
                     <div className="cht_text cht_file base-light center-col"
-                        style={{ background: bgcolor, color: txtcolor, marginBottom: space }}
+                        style={{ background: 'none', marginBottom: space }}
                         onClick={() => {
                             this.openFile(chat.fileid, chat.mime, chat.filename,chat.size)
                         }} >
-                        <div>{chat.filename}</div>
-                        <div>{chat.mime}</div>
+                        <div><Icon className="clickable" style={{fontSize:'4rem'}} src={ficon}/></div>
+                        <div className="cht_file_size">{size}</div>
                     </div>)
             }
         }
@@ -290,7 +293,7 @@ class Chat extends React.Component {
                         <div className="cht_file_btn center"
                         onClick={()=>{this.handleSendFile()}}
                         >
-                        <Icon style={{ fontSize: '1.2rem', margin: '0px' }} src="assets://icons/SystemEntity_Folder.png" />
+                        <Icon style={{ fontSize: '1.2rem', margin: '0px' }} src="assets://icons/win_finder.png" />
                         </div>
                         &nbsp;
                         <TextareaAutosize autoFocus 
