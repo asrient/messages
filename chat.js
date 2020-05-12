@@ -148,15 +148,17 @@ class Chat extends React.Component {
             }
             else {
                 ///////////
-                const ficon='assets://ficons/'+mimeCodes.getFileIconFromMime(chat.mime);
-                const size=prettyBytes(chat.size||0);
+                const ficon = 'assets://ficons/' + mimeCodes.getFileIconFromMime(chat.mime);
+                const size = prettyBytes(chat.size || 0);
                 return (
                     <div className="cht_text cht_file base-light center-col"
-                        style={{ background: 'none', marginBottom: space }}
-                        onClick={() => {
-                            this.openFile(chat.fileid, chat.mime, chat.filename,chat.size)
-                        }} >
-                        <div><Icon className="clickable" style={{fontSize:'4rem'}} src={ficon}/></div>
+                        style={{ background: 'none', marginBottom: space }}>
+                        <div
+                            onClick={() => {
+                                this.openFile(chat.fileid, chat.mime, chat.filename, chat.size)
+                            }}>
+                            <Icon className="clickable" style={{ fontSize: '4rem' }} src={ficon} />
+                        </div>
                         <div className="cht_file_size">{size}</div>
                     </div>)
             }
@@ -212,10 +214,14 @@ class Chat extends React.Component {
         this.bottomAnchor = true;
         //this.setState({ ...this.state, text: '' });
     }
-    openFile = (fid, mime, filename,size) => {
-        console.log("OPENING FILE", fid, mime, filename,size);
+    openFile = (fid, mime, filename, size) => {
+        console.log("OPENING FILE", fid, mime, filename, size);
         /////////// Show preview window here
-        window.actions('SAVE_FILE', { fileid: fid, filename,size, airId: this.state.peerId + ':' + this.state.peer.sessionId })
+        var airId=this.state.peerId;
+        if(this.state.peer.sessionId!=null){
+            airId+= ':' + this.state.peer.sessionId;
+        }
+        window.actions('OPEN_PREVIEW', { fileid: fid, filename, size, mime, airId })
     }
     change = (event) => {
         var text = event.target.value;
@@ -291,18 +297,18 @@ class Chat extends React.Component {
                 <div id="cht_bar">
                     <div className="center">
                         <div className="cht_file_btn center"
-                        onClick={()=>{this.handleSendFile()}}
+                            onClick={() => { this.handleSendFile() }}
                         >
-                        <Icon style={{ fontSize: '1.2rem', margin: '0px' }} src="assets://icons/win_finder.png" />
+                            <Icon style={{ fontSize: '1.2rem', margin: '0px' }} src="assets://icons/win_finder.png" />
                         </div>
                         &nbsp;
-                        <TextareaAutosize autoFocus 
-                        maxRows={5} 
-                        placeholder="Message" 
-                        type="text" 
-                        className="cht_input" 
-                        value={this.state.text} 
-                        onChange={this.change} 
+                        <TextareaAutosize autoFocus
+                            maxRows={5}
+                            placeholder="Message"
+                            type="text"
+                            className="cht_input"
+                            value={this.state.text}
+                            onChange={this.change}
                         />
                         &nbsp;
                         {this.getSendButton()}

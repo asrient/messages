@@ -22,6 +22,9 @@ function actions(act, data) {
         else
         window.state.openPage('settings', data);
     }
+    else if (act == 'OPEN_PREVIEW') {
+        window.state.openWindow('preview', data);
+    }
     else if (act == 'OPEN_ADDPEER') {
         window.state.openWindow('addPeer', data);
     }
