@@ -49,6 +49,7 @@ const mimes = {
 
     'video/mpeg':'video.png',
     'video/mp4':'video.png',
+    'video/quicktime':'video.png',
     'video/x-msvideo':'video.png',
     'video/ogg':'video.png',
     'video/mp2t':'video.png',
