@@ -4,6 +4,7 @@ import { Icon, Switcher, BarButton } from "./global.js";
 import AddPeer from "./addPeer.js";
 import Settings from "./settings.js";
 import Preview from "./preview.js";
+import Contacts from "./contacts.js";
 import "./window.css";
 class Window extends React.Component {
     constructor(props) {
@@ -29,6 +30,9 @@ class Window extends React.Component {
         }
         else if (this.state.page == 'settings') {
             return (<div className="win_sheet"><Settings /></div>)
+        }
+        else if (this.state.page == 'contacts') {
+            return (<div className="win_sheet"><Contacts /></div>)
         }
         else if (this.state.page == 'preview') {
             return (<div className="win_sheet"><Preview /></div>)

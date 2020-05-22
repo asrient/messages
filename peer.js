@@ -70,7 +70,7 @@ class Peer extends React.Component {
         if (icn == null || icn == 'default') {
             icn = window.state.DP;
         }
-        return (<div className="pr">
+        return (<div className="pr" style={{textAlign: 'left'}}>
             <div className="center"><Icon className="size-l" style={{borderRadius:'100%',margin:'0px'}} src={icn} /></div>
             <div>
                 <div className="ink-black base-regular size-xs">{this.props.username}</div>

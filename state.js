@@ -70,6 +70,7 @@ function reducers(state = 0, action) {
                 peers: {},
                 recents: { init: false, list: [] },
                 localPeers: {},
+                contacts:{init: false, list: []},
                 chats: {}
             });
             if (st.info.uid == undefined) {
@@ -161,7 +162,10 @@ var api = {
                     if (st.recents.init) {
                         st.recents.list.splice(0, 0, peerId);
                     }
-                    //TODO: put it on allPeers list
+                    if (st.contacts.init) {
+                        //TODO: sort it.
+                        st.contacts.list.splice(0, 0, peerId);
+                    }
                     store.dispatch({ type: 'UPDATE', state: st });
                     cb(true);
                     this.getIcon(peerId + ':' + peer.sessionId, peer.iconKey);
@@ -253,6 +257,41 @@ var api = {
                 store.dispatch({ type: 'UPDATE', state: st });
             })
         })
+    },
+    loadContacts: function () {
+        var list = [];
+        window.peers.find({}).sort({ name: 1 }).limit(500).exec((err, recs) => {
+            recs.forEach((rec) => {
+                var peerId = rec.uid + ':' + rec.host;
+                var exists = list.includes(peerId);
+                if (!exists) {
+                    list.push(peerId);
+                }
+            })
+            var st = store.getState();
+            st.contacts.init = true;
+            st.contacts.list = list;
+            store.dispatch({ type: 'UPDATE', state: st });
+        })
+    },
+    getContacts: function (cb) {
+        var st = store.getState();
+        var len = st.contacts.list.length;
+        var list = [];
+        st.contacts.list.forEach((peerId, ind) => {
+            console.log(peerId)
+            this.getPeer(peerId, (peer) => {
+                if (peer != null) {
+                    list.push(peer);
+                }
+                if (ind >= (len - 1)) {
+                    cb(list);
+                }
+            })
+        })
+        if (!len) {
+            cb([]);
+        }
     },
     loadRecents: function () {
         var list = [];
@@ -555,6 +594,9 @@ var api = {
                 if (peer == null) {
                     //new unknown device
                     data.isAdded = false;
+                }
+                else{
+                    data.icon=peer.icon;
                 }
                 list.push(data);
                 counter++;

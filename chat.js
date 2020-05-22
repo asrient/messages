@@ -275,11 +275,11 @@ class Chat extends React.Component {
                     </div>
                     <div className="center handle" id="cht_title">
                         <div className="center">
-                            <Icon style={{ fontSize: '2rem', margin: '0px', borderRadius: '100%' }} src={icn} />
+                            <Icon style={{ fontSize: '3.6rem', margin: '0px', borderRadius: '100%' }} src={icn} />
                         </div>
                         <div className="center-col" style={{ alignItems: 'flex-start', paddingLeft: '0.5rem' }}>
-                            <div style={{ fontSize: '0.9rem' }} className="base-regular ink-black">{this.state.peer.username}</div>
-                            <div className="base-light ink-dark">{this.state.peer.devicename}</div>
+                            <div  className="base-regular ink-black size-l">{this.state.peer.username}</div>
+                            <div className="base-light size-s ink-dark">{this.state.peer.devicename}</div>
                         </div>
 
                     </div>
