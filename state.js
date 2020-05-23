@@ -307,7 +307,6 @@ var api = {
         var len = st.contacts.list.length;
         var list = [];
         st.contacts.list.forEach((peerId, ind) => {
-            console.log(peerId)
             this.getPeer(peerId, (peer) => {
                 if (peer != null) {
                     list.push(peer);
@@ -342,7 +341,6 @@ var api = {
         var len = st.recents.list.length;
         var list = [];
         st.recents.list.forEach((peerId, ind) => {
-            console.log(peerId)
             this.getPeer(peerId, (peer) => {
                 if (peer != null) {
                     list.push(peer);
@@ -477,7 +475,6 @@ var api = {
                     this.updatePeer(peerId, { sessionId: null, lastPing: time }, peer);
                 }
                 if (((peer.lastPing + 1000 * 40) < time) || force || peer.sessionId == null) {
-                    console.log("INIT2", peer.uid);
                     var secret = peer.secret;
                     var data = code();
                     var enc = data;//
@@ -562,7 +559,7 @@ var api = {
                     }));
                     if (peer.sessionId != sessionId) {
                         this.init2(peerId, true, peer, sessionId);
-                        console.log("handle INIT2: new sessionId, force INIT2 ing..");
+                        //console.log("handle INIT2: new sessionId, force INIT2 ing..");
                     }
                 }
                 else {
