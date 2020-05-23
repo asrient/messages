@@ -70,7 +70,7 @@ function reducers(state = 0, action) {
                 peers: {},
                 recents: { init: false, list: [] },
                 localPeers: {},
-                contacts:{init: false, list: []},
+                contacts: { init: false, list: [] },
                 chats: {}
             });
             if (st.info.uid == undefined) {
@@ -176,6 +176,30 @@ var api = {
             }
         })
     },
+    setMyIcon: function (src) {
+        var filename = code(8) + '.png';
+        var loc = filesDir + '/dp/' + filename;
+        if (!fs.existsSync(filesDir + '/dp')) {
+            fs.mkdirSync(filesDir + '/dp', { recursive: true });
+        }
+        fs.copyFileSync(src, loc);
+        const fid = resources.register(loc);
+        window.info.set('icon', fid);
+        var st = store.getState();
+        st.info.icon = fid;
+        store.dispatch({ type: 'UPDATE', state: st });
+        console.log('new DP set!');
+        //TODO: delete prev DP
+    },
+    myIcon: function () {
+        var st = store.getState();
+        if (st.info.icon == 'default' || st.info.icon == undefined) {
+            return dp;
+        }
+        else {
+            return resources.getPath(st.info.icon);
+        }
+    },
     getIcon: function (airId, iconKey) {
         if (iconKey != 'default') {
             var req = {
@@ -187,6 +211,9 @@ var api = {
                 var filename = code(8) + '.png';
                 var pth = filesDir + '/dp/' + filename;
                 var url = 'files://dp/' + filename;
+                if (!fs.existsSync(filesDir + '/dp')) {
+                    fs.mkdirSync(filesDir + '/dp', { recursive: true });
+                }
                 fs.writeFile(pth, data, (err) => {
                     console.warn("DP updated!", pth, err);
                     this.updatePeer(airId.split(':')[0] + ':' + airId.split(':')[1], { icon: url });
@@ -595,8 +622,8 @@ var api = {
                     //new unknown device
                     data.isAdded = false;
                 }
-                else{
-                    data.icon=peer.icon;
+                else {
+                    data.icon = peer.icon;
                 }
                 list.push(data);
                 counter++;
@@ -785,7 +812,7 @@ var api = {
             properties: ['createDirectory'],
             buttonLabel: "SAVE",
             title: "Save file",
-            defaultPath: dirs.desktop+ '/' + filename
+            defaultPath: dirs.desktop + '/' + filename
         })
             .then(result => {
                 if (!result.canceled) {
@@ -793,7 +820,7 @@ var api = {
                     this.getResource(airId, fid, (mime, data) => {
                         if (mime != null && mime != undefined) {
                             fs.writeFile(pth, data, (e) => {
-                                console.log("FILE DOWNLOADED!",e);
+                                console.log("FILE DOWNLOADED!", e);
                             })
                         }
                     })
