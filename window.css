@@ -44,3 +44,6 @@
         width: 100vw;
     }
 }
+.text-selectable{
+    -webkit-user-select: text;
+}

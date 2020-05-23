@@ -16,7 +16,7 @@ class QuickPannel extends React.Component {
             window.state.loadRecents();
         }
         this.parseState();
-        window.state.subscribe(() => {
+        this.unsub = window.state.subscribe(() => {
             this.parseState();
         })
     }
@@ -38,14 +38,14 @@ class QuickPannel extends React.Component {
             if (html.length < 6) {
                 var peerId = peer.uid + ':' + peer.host;
                 var cls = "qp_circle center";
-                if (this.state.activePeer==peerId){
-                    cls+=" qp_circle_active";
+                if (this.state.activePeer == peerId) {
+                    cls += " qp_circle_active";
                 }
-                    html.push(<div key={peerId} onClick={() => {
-                        //console.log("opening chat",peerId)
-                        window.actions('OPEN_CHAT', peerId);
-                    }} className={cls} style={{backgroundImage:'url('+peer.icon+')'}}>
-                    </div>)
+                html.push(<div key={peerId} onClick={() => {
+                    //console.log("opening chat",peerId)
+                    window.actions('OPEN_CHAT', peerId);
+                }} className={cls} style={{ backgroundImage: 'url(' + peer.icon + ')' }}>
+                </div>)
             }
 
         })

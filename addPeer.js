@@ -165,13 +165,11 @@ class AddByCode extends React.Component {
                 ADD CODE
             </div>
             <div className="center">
-                <input placeholder="AirId" type="text" className="wel_input" value={this.state.airId} onChange={this.change} />
+                <input placeholder="Air ID" type="text" className="wel_input" value={this.state.airId} onChange={this.change} />
             </div>
             {this.getDoneButton()}
             {this.getList()}
         </div>)
-
-
     }
 }
 
@@ -182,7 +180,14 @@ class AddPeer extends React.Component {
     }
     componentDidMount() {
     }
-
+    showIds(){
+        var ids=airPeer.getMyAirIds();
+        return(<div className="ink-light size-xs base-light" style={{textAlign:'left',padding:'0.5rem'}}>
+            <div className="ink-light size-xs base-bold center">Share this code with others</div>
+            <div><span className="ink-dark base-regular">WEB</span> &nbsp;&nbsp; <span className="text-selectable">{ids.global}</span></div>
+            <div><span className="ink-dark base-regular">LOCAL</span> &nbsp;&nbsp;<span className="text-selectable">{ids.local}</span></div>
+        </div>)
+    }
     render() {
         return (<div>
             <div id="ap_top">
@@ -193,7 +198,7 @@ class AddPeer extends React.Component {
                 <div id="ap_head">
                     <div className="handle"></div>
                     <div className="center ink-black base-semibold size-s handle">
-                        New message
+                        Add someone
                         </div>
                     <div className="center">
                         <div className="size-xs ink-blue base-semilight" onClick={() => {
@@ -204,6 +209,7 @@ class AddPeer extends React.Component {
                 </div>
             </div>
             <div style={{ textAlign: "left" }}>
+                {this.showIds()}
                 <div>
                     <Nearby />
                 </div>

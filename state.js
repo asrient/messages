@@ -182,14 +182,15 @@ var api = {
         if (!fs.existsSync(filesDir + '/dp')) {
             fs.mkdirSync(filesDir + '/dp', { recursive: true });
         }
-        fs.copyFileSync(src, loc);
-        const fid = resources.register(loc);
-        window.info.set('icon', fid);
-        var st = store.getState();
-        st.info.icon = fid;
-        store.dispatch({ type: 'UPDATE', state: st });
-        console.log('new DP set!');
-        //TODO: delete prev DP
+        sharp(src).resize({ width: 200, height: 200 }).png().toFile(loc, (err, info) => {
+            const fid = resources.register(loc);
+            window.info.set('icon', fid);
+            var st = store.getState();
+            st.info.icon = fid;
+            store.dispatch({ type: 'UPDATE', state: st });
+            console.log('new DP set!');
+            //TODO: delete prev DP
+        })
     },
     myIcon: function () {
         var st = store.getState();
@@ -584,15 +585,17 @@ var api = {
         var airId = peer.uid + ':' + peer.host + ':' + peer.sessionId;
         this.init2(peer.uid + ':' + peer.host);
         var st = store.getState();
-        st.localPeers[airId] = {
-            username: peer.name.split(':')[0],
-            devicename: peer.name.split(':')[1],
-            uid: peer.uid,
-            host: peer.host,
-            sessionId: peer.sessionId,
-            icon: peer.icon
+        if (airId != airPeer.getMyAirIds().local) {
+            st.localPeers[airId] = {
+                username: peer.name.split(':')[0],
+                devicename: peer.name.split(':')[1],
+                uid: peer.uid,
+                host: peer.host,
+                sessionId: peer.sessionId,
+                icon: peer.icon
+            }
+            store.dispatch({ type: 'UPDATE', state: st });
         }
-        store.dispatch({ type: 'UPDATE', state: st });
     },
     removeLocalPeer: function (peer) {
         var airId = peer.uid + ':' + peer.host + ':' + peer.sessionId;
@@ -632,6 +635,9 @@ var api = {
                 }
             })
         })
+        if (!len) {
+            cb([]);
+        }
     },
     initChat: function (peerId, cb = function () { }) {
         var st = store.getState();

@@ -16,7 +16,7 @@ class Window extends React.Component {
     }
     componentDidMount() {
         this.parseState();
-        window.state.subscribe(() => {
+        this.unsub = window.state.subscribe(() => {
             this.parseState();
         })
     }
