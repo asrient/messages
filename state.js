@@ -62,7 +62,8 @@ function reducers(state = 0, action) {
     switch (action.type) {
         case 'INIT': {
             var st = ({
-                version: '1.0',
+                version: VERSION,
+                updates: { isAvailable: false, isDownloaded: false },
                 instanceCode: code(8),
                 nav: { page: 'recents', relay: null },
                 window: { page: null, relay: null },
@@ -99,6 +100,16 @@ var api = {
         if (info.uid != undefined && info.host != undefined) {
             airPeer.start(info.uid, info.host, 'messages', info.username + ':' + info.devicename)
         }
+    },
+    updatesAvailable: function () {
+        var data = store.getState();
+        data.updates.isAvailable = true;
+        store.dispatch({ type: 'UPDATE', state: data });
+    },
+    updatesDownloaded: function () {
+        var data = store.getState();
+        data.updates.isDownloaded = true;
+        store.dispatch({ type: 'UPDATE', state: data });
     },
     openPage: function (page, relay) {
         var data = store.getState();
@@ -890,5 +901,15 @@ airPeer.on('localPeerRemoved', (peer) => {
     if (peer.app == 'messages')
         api.removeLocalPeer(peer);
 })
+
+electron.ipcRenderer.on('update_available', () => {
+    electron.ipcRenderer.removeAllListeners('update_available');
+    api.updatesAvailable();
+});
+
+electron.ipcRenderer.on('update_downloaded', () => {
+    electron.ipcRenderer.removeAllListeners('update_downloaded');
+    api.updatesDownloaded();
+});
 
 export default api;

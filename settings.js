@@ -1,11 +1,11 @@
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
-import { Icon, Switcher, BarButton } from "./global.js";
+import { Icon, Switcher, BarButton, Loading } from "./global.js";
 
 class Settings extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { dp: window.state.DP }
+        this.state = { dp: window.state.DP, updates: { isAvailable: false, isDownloaded: false, isChecking: false } }
     }
     componentWillUnmount() {
         this.unsub();
@@ -17,8 +17,11 @@ class Settings extends React.Component {
         })
     }
     parseState() {
+        var st = window.state.getState();
+        var updates = st.updates;
+        updates.isChecking = false;
         var dp = window.state.myIcon();
-        this.setState({ ...this.state, dp });
+        this.setState({ ...this.state, dp, updates });
     }
     showIds() {
         var ids = airPeer.getMyAirIds();
@@ -39,12 +42,47 @@ class Settings extends React.Component {
             defaultPath: dirs.pictures
         }).then(result => {
             if (!result.canceled) {
-                var pth=result.filePaths[0];
+                var pth = result.filePaths[0];
                 window.state.setMyIcon(pth);
             }
         }).catch(err => {
             console.error(err)
         })
+    }
+    updatesTab() {
+        var opts = () => {
+            if (this.state.updates.isChecking) {
+                return (<div className="center"><Loading />&nbsp;Checking for updates</div>)
+            }
+            else {
+                if (this.state.updates.isAvailable) {
+                    if (this.state.updates.isDownloaded) {
+                        return (<div className="center-col">Update downloaded
+                            <br />Relaunch the app to install
+                            <br />
+                            <div><button onClick={() => {
+                                window.updates.install();
+                            }}>Install</button></div>
+                        </div>)
+                    }
+                    else {
+                        return (<div className="center"><Loading />&nbsp;Downloading updates</div>)
+                    }
+                }
+                else {
+                    return (<div><button onClick={() => {
+                        window.updates.check();
+                        var updates=this.state.updates;
+                        updates.isChecking=true;
+                        this.setState({...this.state,updates})
+                    }}>Check for updates</button></div>)
+                }
+            }
+        }
+        return (<div className="size-xs base-regular ink-dark">
+            <div>Version&nbsp;{VERSION}</div>
+            <div>{opts()}</div>
+        </div>)
     }
     render() {
         return (<div>
@@ -60,6 +98,8 @@ class Settings extends React.Component {
             </div>
             <br />
             {this.showIds()}
+            <br />
+            {this.updatesTab()}
         </div>)
     }
 }
